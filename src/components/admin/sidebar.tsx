@@ -16,6 +16,7 @@ import {
   ImageIcon,
   Bell,
   Shield,
+  icons,
 } from "lucide-react";
 
 const sidebarItems = [
@@ -36,6 +37,12 @@ const sidebarItems = [
     label: "Events",
     href: "/admin/dashboard/events",
     badge: "3",
+  },
+  {
+    icon: FileText,
+    label: "Openings",
+    href: "/admin/dashboard/openings",
+    badge: "5"
   },
   {
     icon: FileText,
