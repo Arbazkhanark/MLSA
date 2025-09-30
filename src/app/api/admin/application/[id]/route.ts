@@ -121,25 +121,25 @@ export async function PUT(
       message: 'Application updated successfully',
       data: updatedApplication
     });
-  } catch (error: any) {
-    console.error('Update application error:', error);
-    
-    if (error.name === 'ValidationError') {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'Validation failed',
-          error: error.message,
-        },
-        { status: 400 }
-      );
-    }
+  } catch (error: unknown) {
+  console.error('Update application error:', error);
+
+  if (error instanceof mongoose.Error.ValidationError) {
+    return NextResponse.json(
+      {
+        success: false,
+        message: 'Validation failed',
+        error: error.message,
+      },
+      { status: 400 }
+    );
+  }
     
     return NextResponse.json(
       {
         success: false,
         message: 'Failed to update application',
-        error: error.message || 'Internal server error',
+        error: error || 'Internal server error',
       },
       { status: 500 }
     );

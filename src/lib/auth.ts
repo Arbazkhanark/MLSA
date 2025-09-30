@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import jwt, { SignOptions } from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-in-production';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
@@ -9,6 +9,15 @@ export class AuthError extends Error {
     super(message);
     this.name = 'AuthError';
   }
+}
+
+
+interface JwtPayload {
+  id: string;
+  email: string;
+  role: string;
+  iat?: number;
+  exp?: number;
 }
 
 export async function hashPassword(password: string): Promise<string> {
@@ -32,13 +41,16 @@ export function generateToken(user: { id: string; email: string; role: string })
   );
 }
 
-export function verifyToken(token: string): any {
+
+export function verifyToken(token: string): JwtPayload {
   try {
-    return jwt.verify(token, JWT_SECRET);
-  } catch (error) {
+    // jwt.verify returns string | object, so cast to JwtPayload
+    return jwt.verify(token, JWT_SECRET) as JwtPayload;
+  } catch {
     throw new AuthError('Invalid or expired token');
   }
 }
+
 
 export function setTokenCookie(token: string): string {
   return `adminToken=${token}; Path=/; HttpOnly; SameSite=Strict; Max-Age=604800; ${
@@ -51,3 +63,10 @@ export function clearTokenCookie(): string {
     process.env.NODE_ENV === 'production' ? 'Secure' : ''
   }`;
 }
+
+
+
+
+
+
+

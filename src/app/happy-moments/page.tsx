@@ -1,18 +1,27 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Heart, Calendar, Users, Award, Camera, Share2, Filter } from "lucide-react"
-import { Navigation } from "@/components/public/navigation"
-import { Footer } from "@/components/public/footer"
+import { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Heart,
+  Calendar,
+  Users,
+  Award,
+  Camera,
+  Share2,
+  Filter,
+} from "lucide-react";
+import { Navigation } from "@/components/public/navigation";
+import { Footer } from "@/components/public/footer";
 
 const moments = [
   {
     id: 1,
     title: "First Hackathon Victory!",
-    description: "Our team won first place at the Inter-College Hackathon with our AI-powered study assistant app.",
+    description:
+      "Our team won first place at the Inter-College Hackathon with our AI-powered study assistant app.",
     date: "2024-03-15",
     category: "Achievement",
     image: "/students-celebrating-hackathon-victory-with-trophy.jpg",
@@ -22,7 +31,8 @@ const moments = [
   {
     id: 2,
     title: "Microsoft Azure Workshop Success",
-    description: "Over 200 students attended our Azure fundamentals workshop, with 95% completion rate!",
+    description:
+      "Over 200 students attended our Azure fundamentals workshop, with 95% completion rate!",
     date: "2024-02-28",
     category: "Workshop",
     image: "/students-learning-in-computer-lab-azure-workshop.jpg",
@@ -32,7 +42,8 @@ const moments = [
   {
     id: 3,
     title: "Community Coding Night",
-    description: "Late-night coding session turned into an amazing collaboration with pizza and great conversations.",
+    description:
+      "Late-night coding session turned into an amazing collaboration with pizza and great conversations.",
     date: "2024-02-14",
     category: "Community",
     image: "/students-coding-together-at-night-with-pizza.jpg",
@@ -42,7 +53,8 @@ const moments = [
   {
     id: 4,
     title: "Guest Speaker: Microsoft Engineer",
-    description: "Inspiring talk from a Microsoft senior engineer about career paths in tech and innovation.",
+    description:
+      "Inspiring talk from a Microsoft senior engineer about career paths in tech and innovation.",
     date: "2024-01-20",
     category: "Speaker Event",
     image: "/professional-speaker-presenting-to-students-in-aud.jpg",
@@ -52,7 +64,8 @@ const moments = [
   {
     id: 5,
     title: "Team Building Retreat",
-    description: "Amazing weekend retreat where we bonded as a team and planned exciting projects for the semester.",
+    description:
+      "Amazing weekend retreat where we bonded as a team and planned exciting projects for the semester.",
     date: "2024-01-10",
     category: "Team Building",
     image: "/students-team-building-activities-outdoor-retreat.jpg",
@@ -62,26 +75,42 @@ const moments = [
   {
     id: 6,
     title: "Open Source Contribution Drive",
-    description: "Successfully contributed to 15+ open source projects during our month-long contribution challenge.",
+    description:
+      "Successfully contributed to 15+ open source projects during our month-long contribution challenge.",
     date: "2023-12-15",
     category: "Open Source",
     image: "/students-working-on-laptops-open-source-coding.jpg",
     likes: 92,
     participants: ["Contributors", "Mentors"],
   },
-]
+];
 
-const categories = ["All", "Achievement", "Workshop", "Community", "Speaker Event", "Team Building", "Open Source"]
+const categories = [
+  "All",
+  "Achievement",
+  "Workshop",
+  "Community",
+  "Speaker Event",
+  "Team Building",
+  "Open Source",
+];
 
 export default function HappyMomentsPage() {
-  const [selectedCategory, setSelectedCategory] = useState("All")
-  const [likedMoments, setLikedMoments] = useState<number[]>([])
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [likedMoments, setLikedMoments] = useState<number[]>([]);
 
-  const filteredMoments = moments.filter((moment) => selectedCategory === "All" || moment.category === selectedCategory)
+  const filteredMoments = moments.filter(
+    (moment) =>
+      selectedCategory === "All" || moment.category === selectedCategory
+  );
 
   const handleLike = (momentId: number) => {
-    setLikedMoments((prev) => (prev.includes(momentId) ? prev.filter((id) => id !== momentId) : [...prev, momentId]))
-  }
+    setLikedMoments((prev) =>
+      prev.includes(momentId)
+        ? prev.filter((id) => id !== momentId)
+        : [...prev, momentId]
+    );
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
@@ -95,7 +124,8 @@ export default function HappyMomentsPage() {
               Happy Moments
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto text-balance">
-              Celebrating our journey, achievements, and the memories we've created together
+              Celebrating our journey, achievements, and the memories we&#39;ve
+              created together
             </p>
           </div>
         </div>
@@ -138,7 +168,10 @@ export default function HappyMomentsPage() {
                     className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                   <div className="absolute top-4 left-4">
-                    <Badge variant="secondary" className="bg-background/80 backdrop-blur-sm">
+                    <Badge
+                      variant="secondary"
+                      className="bg-background/80 backdrop-blur-sm"
+                    >
                       {moment.category}
                     </Badge>
                   </div>
@@ -150,15 +183,26 @@ export default function HappyMomentsPage() {
                       onClick={() => handleLike(moment.id)}
                     >
                       <Heart
-                        className={`h-4 w-4 ${likedMoments.includes(moment.id) ? "fill-red-500 text-red-500" : ""}`}
+                        className={`h-4 w-4 ${
+                          likedMoments.includes(moment.id)
+                            ? "fill-red-500 text-red-500"
+                            : ""
+                        }`}
                       />
-                      <span className="ml-1 text-xs">{moment.likes + (likedMoments.includes(moment.id) ? 1 : 0)}</span>
+                      <span className="ml-1 text-xs">
+                        {moment.likes +
+                          (likedMoments.includes(moment.id) ? 1 : 0)}
+                      </span>
                     </Button>
                   </div>
                 </div>
                 <CardContent className="p-6">
-                  <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors">{moment.title}</h3>
-                  <p className="text-muted-foreground mb-4 text-sm leading-relaxed">{moment.description}</p>
+                  <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors">
+                    {moment.title}
+                  </h3>
+                  <p className="text-muted-foreground mb-4 text-sm leading-relaxed">
+                    {moment.description}
+                  </p>
                   <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
                     <div className="flex items-center gap-1">
                       <Calendar className="h-3 w-3" />
@@ -177,21 +221,27 @@ export default function HappyMomentsPage() {
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex -space-x-2">
-                      {moment.participants.slice(0, 3).map((participant, idx) => (
-                        <div
-                          key={idx}
-                          className="w-8 h-8 rounded-full bg-gradient-to-r from-primary to-secondary flex items-center justify-center text-xs font-bold text-primary-foreground border-2 border-background"
-                        >
-                          {participant.charAt(0)}
-                        </div>
-                      ))}
+                      {moment.participants
+                        .slice(0, 3)
+                        .map((participant, idx) => (
+                          <div
+                            key={idx}
+                            className="w-8 h-8 rounded-full bg-gradient-to-r from-primary to-secondary flex items-center justify-center text-xs font-bold text-primary-foreground border-2 border-background"
+                          >
+                            {participant.charAt(0)}
+                          </div>
+                        ))}
                       {moment.participants.length > 3 && (
                         <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs font-bold border-2 border-background">
                           +{moment.participants.length - 3}
                         </div>
                       )}
                     </div>
-                    <Button size="sm" variant="ghost" className="opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
                       <Share2 className="h-3 w-3 mr-1" />
                       Share
                     </Button>
@@ -207,17 +257,39 @@ export default function HappyMomentsPage() {
       <section className="py-16 px-4 bg-muted/30">
         <div className="container mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Our Journey in Numbers</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Our Journey in Numbers
+            </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Every moment counts in building our amazing tech community
             </p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {[
-              { icon: Award, label: "Achievements", value: "25+", color: "text-yellow-500" },
-              { icon: Users, label: "Active Members", value: "150+", color: "text-blue-500" },
-              { icon: Camera, label: "Memories Captured", value: "500+", color: "text-green-500" },
-              { icon: Heart, label: "Total Likes", value: "1.2K+", color: "text-red-500" },
+              {
+                icon: Award,
+                label: "Achievements",
+                value: "25+",
+                color: "text-yellow-500",
+              },
+              {
+                icon: Users,
+                label: "Active Members",
+                value: "150+",
+                color: "text-blue-500",
+              },
+              {
+                icon: Camera,
+                label: "Memories Captured",
+                value: "500+",
+                color: "text-green-500",
+              },
+              {
+                icon: Heart,
+                label: "Total Likes",
+                value: "1.2K+",
+                color: "text-red-500",
+              },
             ].map((stat, index) => (
               <Card
                 key={stat.label}
@@ -227,7 +299,9 @@ export default function HappyMomentsPage() {
                 <CardContent className="p-6">
                   <stat.icon className={`h-8 w-8 mx-auto mb-3 ${stat.color}`} />
                   <div className="text-2xl font-bold mb-1">{stat.value}</div>
-                  <div className="text-sm text-muted-foreground">{stat.label}</div>
+                  <div className="text-sm text-muted-foreground">
+                    {stat.label}
+                  </div>
                 </CardContent>
               </Card>
             ))}
@@ -240,7 +314,9 @@ export default function HappyMomentsPage() {
         <div className="container mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Memory Wall</h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">Quick snapshots of our favorite moments</p>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Quick snapshots of our favorite moments
+            </p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
             {Array.from({ length: 12 }, (_, i) => (
@@ -250,7 +326,9 @@ export default function HappyMomentsPage() {
                 style={{ animationDelay: `${i * 50}ms` }}
               >
                 <img
-                  src={`/happy-students-tech-community-moment-.jpg?height=200&width=200&query=happy students tech community moment ${i + 1}`}
+                  src={`/happy-students-tech-community-moment-.jpg?height=200&width=200&query=happy students tech community moment ${
+                    i + 1
+                  }`}
                   alt={`Memory ${i + 1}`}
                   className="w-full h-full object-cover hover:brightness-110 transition-all duration-300"
                 />
@@ -261,5 +339,5 @@ export default function HappyMomentsPage() {
       </section>
       <Footer />
     </div>
-  )
+  );
 }

@@ -1,8 +1,20 @@
 import { connectToDatabase } from '@/lib/db';
 import { adminAuthMiddleware } from '@/middleware/authAdminMiddleware';
 import { getMessageModel } from '@/models/message.model';
+import mongoose from 'mongoose';
 import { NextRequest, NextResponse } from 'next/server';
 
+
+
+// Define interfaces for better type safety
+interface FilterCriteria {
+  $or?: Array<{
+    [key: string]: { $regex: string; $options: string };
+  }>;
+  status?: string;
+  category?: string;
+  priority?: string;
+}
 
 
 
@@ -77,25 +89,27 @@ export async function POST(request: NextRequest) {
       }
     }, { status: 201 });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Submit contact message error:', error);
     
-    if (error.name === 'ValidationError') {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'Validation failed',
-          error: error.message,
-        },
-        { status: 400 }
-      );
-    }
+  console.error('Update application error:', error);
+
+  if (error instanceof mongoose.Error.ValidationError) {
+    return NextResponse.json(
+      {
+        success: false,
+        message: 'Validation failed',
+        error: error.message,
+      },
+      { status: 400 }
+    );
+  }
     
     return NextResponse.json(
       {
         success: false,
         message: 'Failed to send message',
-        error: error.message || 'Internal server error',
+        error: error || 'Internal server error',
       },
       { status: 500 }
     );
@@ -119,7 +133,7 @@ export async function GET(request: NextRequest) {
     const priority = searchParams.get('priority') || '';
 
     // Build filter object
-    const filter: any = {};
+    const filter: FilterCriteria = {};
     
     if (search) {
       filter.$or = [
@@ -210,14 +224,26 @@ export async function DELETE(request: NextRequest) {
       message: `${result.deletedCount} messages deleted successfully`,
       deletedCount: result.deletedCount
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Delete messages error:', error);
+      console.error('Update application error:', error);
+
+  if (error instanceof mongoose.Error.ValidationError) {
+    return NextResponse.json(
+      {
+        success: false,
+        message: 'Validation failed',
+        error: error.message,
+      },
+      { status: 400 }
+    );
+  }
     
     return NextResponse.json(
       {
         success: false,
         message: 'Failed to delete messages',
-        error: error.message || 'Internal server error',
+        error: error || 'Internal server error',
       },
       { status: 500 }
     );

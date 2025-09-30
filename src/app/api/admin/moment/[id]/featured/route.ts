@@ -71,14 +71,24 @@ export async function PUT(
       message: `Moment ${featured ? 'featured' : 'unfeatured'} successfully`,
       data: updatedMoment
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Toggle featured error:', error);
+      if (error instanceof mongoose.Error.ValidationError) {
+    return NextResponse.json(
+      {
+        success: false,
+        message: 'Validation failed',
+        error: error.message,
+      },
+      { status: 400 }
+    );
+  }
     
     return NextResponse.json(
       {
         success: false,
         message: 'Failed to update featured status',
-        error: error.message || 'Internal server error',
+        error: error || 'Internal server error',
       },
       { status: 500 }
     );

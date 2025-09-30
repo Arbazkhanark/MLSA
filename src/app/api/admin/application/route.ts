@@ -193,6 +193,84 @@ import mongoose from 'mongoose';
 
 
 // GET /api/admin/applications - Get all applications
+
+
+// export async function GET(request: NextRequest) {
+//   try {
+//     await connectToDatabase();
+
+//     const { searchParams } = new URL(request.url);
+//     const search = searchParams.get('search') || '';
+//     const status = searchParams.get('status') || '';
+//     const position = searchParams.get('position') || '';
+
+//     // Build filter object
+//     const filter: any = {};
+    
+//     if (search) {
+//       filter.$or = [
+//         { name: { $regex: search, $options: 'i' } },
+//         { email: { $regex: search, $options: 'i' } },
+//         { position: { $regex: search, $options: 'i' } },
+//         { university: { $regex: search, $options: 'i' } }
+//       ];
+//     }
+
+//     if (status && status !== 'all') {
+//       filter.status = status;
+//     }
+
+//     if (position && position !== 'all') {
+//       filter.position = position;
+//     }
+
+//     const Application = getApplicationModel();
+//     const applications = await Application.find(filter)
+//       .populate('openingId', 'title description')
+//       .sort({ appliedDate: -1 })
+//       .select('-__v')
+//       .lean();
+
+//     return NextResponse.json({
+//       success: true,
+//       data: applications,
+//       total: applications.length
+//     });
+//   } catch (error) {
+//     console.error('Get applications error:', error);
+//     return NextResponse.json(
+//       {
+//         success: false,
+//         message: 'Failed to fetch applications',
+//         error: 'Internal server error',
+//       },
+//       { status: 500 }
+//     );
+//   }
+// }
+
+
+
+
+
+
+
+
+
+
+// Define interfaces for better type safety
+interface FilterCriteria {
+  $or?: Array<{
+    [key: string]: { $regex: string; $options: string };
+  }>;
+  status?: string;
+  position?: string;
+}
+
+
+
+
+// GET /api/admin/applications - Get all applications
 export async function GET(request: NextRequest) {
   try {
     await connectToDatabase();
@@ -202,8 +280,8 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get('status') || '';
     const position = searchParams.get('position') || '';
 
-    // Build filter object
-    const filter: any = {};
+    // Build filter object with proper typing
+    const filter: FilterCriteria = {};
     
     if (search) {
       filter.$or = [
@@ -234,13 +312,16 @@ export async function GET(request: NextRequest) {
       data: applications,
       total: applications.length
     });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Get applications error:', error);
+    
+    const errorMessage = error instanceof Error ? error.message : 'Internal server error';
+    
     return NextResponse.json(
       {
         success: false,
         message: 'Failed to fetch applications',
-        error: 'Internal server error',
+        error: errorMessage,
       },
       { status: 500 }
     );

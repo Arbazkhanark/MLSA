@@ -1,15 +1,21 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Mail, Phone, MapPin, Send, ExternalLink } from "lucide-react"
-import { Navigation } from "@/components/public/navigation"
-import { Footer } from "@/components/public/footer"
+import { useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Mail, Phone, MapPin, Send, ExternalLink } from "lucide-react";
+import { Navigation } from "@/components/public/navigation";
+import { Footer } from "@/components/public/footer";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -17,20 +23,22 @@ export default function ContactPage() {
     email: "",
     subject: "",
     message: "",
-  })
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     // Handle form submission
-    console.log("Form submitted:", formData)
-  }
+    console.log("Form submitted:", formData);
+  };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setFormData((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
-    }))
-  }
+    }));
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
@@ -44,7 +52,8 @@ export default function ContactPage() {
               Get In Touch
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto text-balance">
-              Have questions? Want to collaborate? We'd love to hear from you!
+              Have questions? Want to collaborate? We&#39;d love to hear from
+              you!
             </p>
           </div>
         </div>
@@ -63,14 +72,18 @@ export default function ContactPage() {
                     Send us a Message
                   </CardTitle>
                   <CardDescription>
-                    Fill out the form below and we'll get back to you as soon as possible.
+                    Fill out the form below and we&#39;ll get back to you as
+                    soon as possible.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label htmlFor="name" className="block text-sm font-medium mb-2">
+                        <label
+                          htmlFor="name"
+                          className="block text-sm font-medium mb-2"
+                        >
                           Full Name
                         </label>
                         <Input
@@ -83,7 +96,10 @@ export default function ContactPage() {
                         />
                       </div>
                       <div>
-                        <label htmlFor="email" className="block text-sm font-medium mb-2">
+                        <label
+                          htmlFor="email"
+                          className="block text-sm font-medium mb-2"
+                        >
                           Email Address
                         </label>
                         <Input
@@ -98,7 +114,10 @@ export default function ContactPage() {
                       </div>
                     </div>
                     <div>
-                      <label htmlFor="subject" className="block text-sm font-medium mb-2">
+                      <label
+                        htmlFor="subject"
+                        className="block text-sm font-medium mb-2"
+                      >
                         Subject
                       </label>
                       <Input
@@ -111,7 +130,10 @@ export default function ContactPage() {
                       />
                     </div>
                     <div>
-                      <label htmlFor="message" className="block text-sm font-medium mb-2">
+                      <label
+                        htmlFor="message"
+                        className="block text-sm font-medium mb-2"
+                      >
                         Message
                       </label>
                       <Textarea
@@ -134,7 +156,10 @@ export default function ContactPage() {
             </div>
 
             {/* Contact Information */}
-            <div className="space-y-6 animate-fade-in-up" style={{ animationDelay: "200ms" }}>
+            <div
+              className="space-y-6 animate-fade-in-up"
+              style={{ animationDelay: "200ms" }}
+            >
               <Card className="border-border/50 hover:border-primary/50 transition-colors">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -149,7 +174,9 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <p className="font-medium">Email</p>
-                      <p className="text-sm text-muted-foreground">mlsa@college.edu</p>
+                      <p className="text-sm text-muted-foreground">
+                        mlsa@college.edu
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
@@ -158,7 +185,9 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <p className="font-medium">Phone</p>
-                      <p className="text-sm text-muted-foreground">+1 (555) 123-4567</p>
+                      <p className="text-sm text-muted-foreground">
+                        +1 (555) 123-4567
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
@@ -167,7 +196,9 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <p className="font-medium">Location</p>
-                      <p className="text-sm text-muted-foreground">Computer Science Building, Room 201</p>
+                      <p className="text-sm text-muted-foreground">
+                        Computer Science Building, Room 201
+                      </p>
                     </div>
                   </div>
                 </CardContent>
@@ -181,11 +212,15 @@ export default function ContactPage() {
                   <div className="space-y-2">
                     <div className="flex justify-between">
                       <span>Monday - Friday</span>
-                      <span className="text-muted-foreground">2:00 PM - 6:00 PM</span>
+                      <span className="text-muted-foreground">
+                        2:00 PM - 6:00 PM
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span>Saturday</span>
-                      <span className="text-muted-foreground">10:00 AM - 2:00 PM</span>
+                      <span className="text-muted-foreground">
+                        10:00 AM - 2:00 PM
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span>Sunday</span>
@@ -198,7 +233,9 @@ export default function ContactPage() {
               <Card className="border-border/50 hover:border-primary/50 transition-colors">
                 <CardHeader>
                   <CardTitle>Follow Us</CardTitle>
-                  <CardDescription>Stay connected with our community</CardDescription>
+                  <CardDescription>
+                    Stay connected with our community
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-wrap gap-2">
@@ -231,7 +268,9 @@ export default function ContactPage() {
       <section className="py-16 px-4 bg-muted/30">
         <div className="container mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Frequently Asked Questions</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Frequently Asked Questions
+            </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Quick answers to common questions about our community
             </p>
@@ -240,19 +279,23 @@ export default function ContactPage() {
             {[
               {
                 question: "How can I join MLSA?",
-                answer: "Check out our Hiring page for current openings and application requirements.",
+                answer:
+                  "Check out our Hiring page for current openings and application requirements.",
               },
               {
                 question: "Are events free to attend?",
-                answer: "Yes! All our workshops, seminars, and networking events are completely free for students.",
+                answer:
+                  "Yes! All our workshops, seminars, and networking events are completely free for students.",
               },
               {
                 question: "Do I need prior experience?",
-                answer: "Not at all! We welcome students of all skill levels and provide mentorship for beginners.",
+                answer:
+                  "Not at all! We welcome students of all skill levels and provide mentorship for beginners.",
               },
               {
                 question: "How often do you host events?",
-                answer: "We typically host 2-3 events per month, including workshops, guest lectures, and hackathons.",
+                answer:
+                  "We typically host 2-3 events per month, including workshops, guest lectures, and hackathons.",
               },
             ].map((faq, index) => (
               <Card
@@ -273,5 +316,5 @@ export default function ContactPage() {
       </section>
       <Footer />
     </div>
-  )
+  );
 }

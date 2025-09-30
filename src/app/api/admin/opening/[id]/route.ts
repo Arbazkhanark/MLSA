@@ -119,25 +119,26 @@ export async function PUT(
       message: 'Opening updated successfully',
       data: updatedOpening
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Update opening error:', error);
     
-    if (error.name === 'ValidationError') {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'Validation failed',
-          error: error.message,
-        },
-        { status: 400 }
-      );
-    }
+      if (error instanceof mongoose.Error.ValidationError) {
+    return NextResponse.json(
+      {
+        success: false,
+        message: 'Validation failed',
+        error: error.message,
+      },
+      { status: 400 }
+    );
+  }
+
     
     return NextResponse.json(
       {
         success: false,
         message: 'Failed to update opening',
-        error: error.message || 'Internal server error',
+        error: error || 'Internal server error',
       },
       { status: 500 }
     );

@@ -40,7 +40,8 @@ export default function AdminDashboard() {
         {/* Welcome Section */}
         <div>
           <h2 className="text-2xl font-bold">Welcome back, Admin!</h2>
-          <p className="text-muted-foreground">Here's what's happening with your MLSA community today.</p>
+          <p className="text-muted-foreground">Here&apos;s what&apos;s happening with your MLSA community today.</p>
+
         </div>
 
         {/* Stats Cards */}
