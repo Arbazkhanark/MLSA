@@ -1,123 +1,3 @@
-// import Image from "next/image";
-
-// export default function Home() {
-//   return (
-//     <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-//       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-//         <Image
-//           className="dark:invert"
-//           src="/next.svg"
-//           alt="Next.js logo"
-//           width={180}
-//           height={38}
-//           priority
-//         />
-//         <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-//           <li className="mb-2 tracking-[-.01em]">
-//             Get started by editing{" "}
-//             <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-//               src/app/page.tsx
-//             </code>
-//             .
-//           </li>
-//           <li className="tracking-[-.01em]">
-//             Save and see your changes instantly.
-//           </li>
-//         </ol>
-
-//         <div className="flex gap-4 items-center flex-col sm:flex-row">
-//           <a
-//             className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-//             href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-//             target="_blank"
-//             rel="noopener noreferrer"
-//           >
-//             <Image
-//               className="dark:invert"
-//               src="/vercel.svg"
-//               alt="Vercel logomark"
-//               width={20}
-//               height={20}
-//             />
-//             Deploy now
-//           </a>
-//           <a
-//             className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-//             href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-//             target="_blank"
-//             rel="noopener noreferrer"
-//           >
-//             Read our docs
-//           </a>
-//         </div>
-//       </main>
-//       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-//         <a
-//           className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-//           href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-//           target="_blank"
-//           rel="noopener noreferrer"
-//         >
-//           <Image
-//             aria-hidden
-//             src="/file.svg"
-//             alt="File icon"
-//             width={16}
-//             height={16}
-//           />
-//           Learn
-//         </a>
-//         <a
-//           className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-//           href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-//           target="_blank"
-//           rel="noopener noreferrer"
-//         >
-//           <Image
-//             aria-hidden
-//             src="/window.svg"
-//             alt="Window icon"
-//             width={16}
-//             height={16}
-//           />
-//           Examples
-//         </a>
-//         <a
-//           className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-//           href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-//           target="_blank"
-//           rel="noopener noreferrer"
-//         >
-//           <Image
-//             aria-hidden
-//             src="/globe.svg"
-//             alt="Globe icon"
-//             width={16}
-//             height={16}
-//           />
-//           Go to nextjs.org →
-//         </a>
-//       </footer>
-//     </div>
-//   );
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 "use client"
 
 import { useEffect, useState } from "react"
@@ -149,14 +29,33 @@ export default function HomePage() {
           <div
             className={`transition-all duration-1000 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
           >
+            {/* MLSA x AUH Badge */}
+            <div className="mb-8">
+              <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full border-2 border-primary/30 bg-primary/10 backdrop-blur-sm">
+                <span className="text-lg font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                  MLSA
+                </span>
+                <span className="text-lg text-muted-foreground">×</span>
+                <span className="text-lg font-bold bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">
+                  AUH
+                </span>
+              </div>
+            </div>
+
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 bg-gradient-to-r from-foreground via-primary to-accent bg-clip-text text-transparent">
               Microsoft Learn
               <br />
               Student Ambassadors
             </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto">
-              Empowering the next generation of tech leaders through community, learning, and innovation
-            </p>
+            
+            {/* Subtitle with AUH emphasis */}
+            <div className="mb-8">
+              <p className="text-xl md:text-2xl text-muted-foreground mb-4 max-w-3xl mx-auto">
+                Empowering the next generation of tech leaders at 
+                <span className="font-semibold text-primary ml-2">Amity University Haryana</span>
+              </p>
+            </div>
+
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="animate-glow">
                 <Link href="/team" className="flex items-center">
@@ -198,9 +97,9 @@ export default function HomePage() {
       <section className="py-20 bg-card/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Our Mission</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Our Mission at AUH</h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              We&#39;re building a vibrant community where students can learn, grow, and shape the future of technology
+              Building Amity University Haryana&apos;s most vibrant tech community where students learn, innovate, and lead together
             </p>
           </div>
 
@@ -212,7 +111,7 @@ export default function HomePage() {
                 </div>
                 <h3 className="text-xl font-semibold mb-4">Learn & Grow</h3>
                 <p className="text-muted-foreground">
-                  Access cutting-edge resources, workshops, and mentorship to accelerate your tech journey
+                  Access cutting-edge resources, workshops, and mentorship to accelerate your tech journey at AUH
                 </p>
               </CardContent>
             </Card>
@@ -224,7 +123,7 @@ export default function HomePage() {
                 </div>
                 <h3 className="text-xl font-semibold mb-4">Build Community</h3>
                 <p className="text-muted-foreground">
-                  Connect with like-minded peers, collaborate on projects, and build lasting professional relationships
+                  Connect with AUH&apos;s brightest minds, collaborate on projects, and build lasting professional relationships
                 </p>
               </CardContent>
             </Card>
@@ -236,7 +135,7 @@ export default function HomePage() {
                 </div>
                 <h3 className="text-xl font-semibold mb-4">Drive Innovation</h3>
                 <p className="text-muted-foreground">
-                  Lead initiatives, organize events, and make a real impact in your local tech ecosystem
+                  Lead initiatives, organize events, and make a real impact in AUH&apos;s tech ecosystem
                 </p>
               </CardContent>
             </Card>
@@ -272,8 +171,8 @@ export default function HomePage() {
       <section className="py-20 bg-card/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">What We Offer</h2>
-            <p className="text-xl text-muted-foreground">Discover the opportunities waiting for you in our community</p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">What We Offer at AUH</h2>
+            <p className="text-xl text-muted-foreground">Discover the exclusive opportunities for Amity University Haryana students</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -281,7 +180,7 @@ export default function HomePage() {
               <CardContent className="p-6">
                 <Calendar className="w-8 h-8 text-primary mb-4" />
                 <h3 className="font-semibold mb-2">Tech Events</h3>
-                <p className="text-sm text-muted-foreground">Regular workshops, hackathons, and tech talks</p>
+                <p className="text-sm text-muted-foreground">Regular workshops, hackathons, and tech talks at AUH campus</p>
               </CardContent>
             </Card>
 
@@ -289,7 +188,7 @@ export default function HomePage() {
               <CardContent className="p-6">
                 <BookOpen className="w-8 h-8 text-accent mb-4" />
                 <h3 className="font-semibold mb-2">Learning Resources</h3>
-                <p className="text-sm text-muted-foreground">Curated content, tutorials, and study materials</p>
+                <p className="text-sm text-muted-foreground">Curated content, tutorials, and study materials for AUH students</p>
               </CardContent>
             </Card>
 
@@ -297,7 +196,7 @@ export default function HomePage() {
               <CardContent className="p-6">
                 <Users className="w-8 h-8 text-chart-3 mb-4" />
                 <h3 className="font-semibold mb-2">Mentorship</h3>
-                <p className="text-sm text-muted-foreground">Connect with industry professionals and seniors</p>
+                <p className="text-sm text-muted-foreground">Connect with industry professionals and senior AUH students</p>
               </CardContent>
             </Card>
 
@@ -305,7 +204,7 @@ export default function HomePage() {
               <CardContent className="p-6">
                 <Award className="w-8 h-8 text-chart-4 mb-4" />
                 <h3 className="font-semibold mb-2">Recognition</h3>
-                <p className="text-sm text-muted-foreground">Certificates, badges, and career opportunities</p>
+                <p className="text-sm text-muted-foreground">Certificates, badges, and career opportunities for AUH members</p>
               </CardContent>
             </Card>
           </div>
@@ -315,9 +214,9 @@ export default function HomePage() {
       {/* CTA Section */}
       <section className="py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Join Our Community?</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Join MLSA AUH?</h2>
           <p className="text-xl text-muted-foreground mb-8">
-            Take the first step towards an exciting tech journey with MLSA
+            Take the first step towards an exciting tech journey with Microsoft Learn Student Ambassadors at Amity University Haryana
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" className="animate-glow">
