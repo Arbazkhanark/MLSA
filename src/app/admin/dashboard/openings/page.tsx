@@ -135,8 +135,9 @@ export default function AdminOpeningsPage() {
       
       await mutate()
       setOpen(false)
-    } catch (e: any) {
-      toast.error(e.message || "An error occurred")
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : "An error occurred"
+      toast.error(errorMessage)
     }
   }
 
@@ -155,8 +156,9 @@ export default function AdminOpeningsPage() {
       
       toast.success("Opening deleted successfully")
       mutate()
-    } catch (error: any) {
-      toast.error(error.message || "Failed to delete opening")
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to delete opening"
+      toast.error(errorMessage)
     }
   }
 
