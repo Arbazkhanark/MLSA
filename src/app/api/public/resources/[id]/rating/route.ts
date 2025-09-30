@@ -6,7 +6,7 @@ import mongoose from 'mongoose';
 // PUT /api/resources/[id]/rating - Rate a resource
 export async function PUT(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         await connectToDatabase();

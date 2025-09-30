@@ -145,7 +145,7 @@ interface UpdateData {
 // PUT /api/admin/applications/[id]/status - Update application status
 export async function PUT(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     // Apply admin auth middleware
     const authResponse = await adminAuthMiddleware(request);

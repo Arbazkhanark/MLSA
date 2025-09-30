@@ -7,7 +7,7 @@ import mongoose from 'mongoose';
 // GET /api/admin/messages/[id] - Get single message
 export async function GET(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         await connectToDatabase();
@@ -64,7 +64,7 @@ export async function GET(
 // PUT /api/admin/messages/[id] - Update message
 export async function PUT(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     // Apply admin auth middleware
     const authResponse = await adminAuthMiddleware(request);
@@ -144,7 +144,7 @@ export async function PUT(
 // DELETE /api/admin/messages/[id] - Delete message
 export async function DELETE(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     // Apply admin auth middleware
     const authResponse = await adminAuthMiddleware(request);

@@ -3,11 +3,12 @@ import { adminAuthMiddleware } from '@/middleware/authAdminMiddleware';
 import { getApplicationModel } from '@/models/application.model';
 import { NextRequest, NextResponse } from 'next/server';
 import mongoose from 'mongoose';
+import { getOpeningModel } from '@/models/opening.model';
 
 // GET /api/admin/applications/[id] - Get single application
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectToDatabase();
@@ -25,6 +26,7 @@ export async function GET(
       );
     }
 
+    getOpeningModel();
     const Application = getApplicationModel();
     const application = await Application.findById(id)
       .populate('openingId', 'title description requirements responsibilities')
@@ -46,13 +48,16 @@ export async function GET(
       success: true,
       data: application
     });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Get application error:', error);
+    
+    const errorMessage = error instanceof Error ? error.message : 'Internal server error';
+    
     return NextResponse.json(
       {
         success: false,
         message: 'Failed to fetch application',
-        error: 'Internal server error',
+        error: errorMessage,
       },
       { status: 500 }
     );
@@ -62,7 +67,7 @@ export async function GET(
 // PUT /api/admin/applications/[id] - Update application
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   // Apply admin auth middleware
   const authResponse = await adminAuthMiddleware(request);
@@ -108,6 +113,7 @@ export async function PUT(
     }
 
     // Update application
+    getOpeningModel();
     const updatedApplication = await Application.findByIdAndUpdate(
       id,
       { ...body },
@@ -122,24 +128,26 @@ export async function PUT(
       data: updatedApplication
     });
   } catch (error: unknown) {
-  console.error('Update application error:', error);
+    console.error('Update application error:', error);
 
-  if (error instanceof mongoose.Error.ValidationError) {
-    return NextResponse.json(
-      {
-        success: false,
-        message: 'Validation failed',
-        error: error.message,
-      },
-      { status: 400 }
-    );
-  }
+    if (error instanceof mongoose.Error.ValidationError) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'Validation failed',
+          error: error.message,
+        },
+        { status: 400 }
+      );
+    }
+    
+    const errorMessage = error instanceof Error ? error.message : 'Internal server error';
     
     return NextResponse.json(
       {
         success: false,
         message: 'Failed to update application',
-        error: error || 'Internal server error',
+        error: errorMessage,
       },
       { status: 500 }
     );
@@ -149,7 +157,7 @@ export async function PUT(
 // DELETE /api/admin/applications/[id] - Delete application
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   // Apply admin auth middleware
   const authResponse = await adminAuthMiddleware(request);
@@ -195,13 +203,16 @@ export async function DELETE(
       success: true,
       message: 'Application deleted successfully'
     });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Delete application error:', error);
+    
+    const errorMessage = error instanceof Error ? error.message : 'Internal server error';
+    
     return NextResponse.json(
       {
         success: false,
         message: 'Failed to delete application',
-        error: 'Internal server error',
+        error: errorMessage,
       },
       { status: 500 }
     );

@@ -7,7 +7,7 @@ import mongoose from 'mongoose';
 // GET /api/admin/moments/[id] - Get single moment
 export async function GET(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         await connectToDatabase();
@@ -59,7 +59,7 @@ export async function GET(
 // PUT /api/admin/moments/[id] - Update moment
 export async function PUT(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     // Apply admin auth middleware
     const authResponse = await adminAuthMiddleware(request);
@@ -149,7 +149,7 @@ export async function PUT(
 // DELETE /api/admin/moments/[id] - Delete moment
 export async function DELETE(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     // Apply admin auth middleware
     const authResponse = await adminAuthMiddleware(request);

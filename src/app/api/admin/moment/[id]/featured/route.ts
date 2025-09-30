@@ -7,7 +7,7 @@ import mongoose from 'mongoose';
 // PUT /api/admin/moments/[id]/featured - Toggle featured status
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   // Apply admin auth middleware
   const authResponse = await adminAuthMiddleware(request);

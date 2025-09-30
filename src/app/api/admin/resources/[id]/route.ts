@@ -7,12 +7,12 @@ import mongoose from 'mongoose';
 // GET /api/admin/resources/[id] - Get single resource
 export async function GET(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         await connectToDatabase();
 
-        const { id } = params;
+        const { id } = await params;
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return NextResponse.json(
@@ -59,7 +59,7 @@ export async function GET(
 // PUT /api/admin/resources/[id] - Update resource
 export async function PUT(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     // Apply admin auth middleware
     const authResponse = await adminAuthMiddleware(request);
@@ -70,7 +70,7 @@ export async function PUT(
     try {
         await connectToDatabase();
 
-        const { id } = params;
+        const { id } = await params;
         const body = await request.json();
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -144,7 +144,7 @@ export async function PUT(
 // DELETE /api/admin/resources/[id] - Delete resource
 export async function DELETE(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     // Apply admin auth middleware
     const authResponse = await adminAuthMiddleware(request);
@@ -155,7 +155,7 @@ export async function DELETE(
     try {
         await connectToDatabase();
 
-        const { id } = params;
+        const { id } = await params;
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return NextResponse.json(

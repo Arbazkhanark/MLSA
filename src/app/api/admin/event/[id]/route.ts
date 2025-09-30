@@ -7,7 +7,7 @@ import mongoose from 'mongoose';
 // GET /api/admin/events/[id] - Get single event
 export async function GET(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         await connectToDatabase();
@@ -59,7 +59,7 @@ export async function GET(
 // PUT /api/admin/events/[id] - Update event
 export async function PUT(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     // Apply admin auth middleware
     const authResponse = await adminAuthMiddleware(request);
@@ -148,7 +148,7 @@ export async function PUT(
 // DELETE /api/admin/events/[id] - Delete event
 export async function DELETE(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     // Apply admin auth middleware
     const authResponse = await adminAuthMiddleware(request);

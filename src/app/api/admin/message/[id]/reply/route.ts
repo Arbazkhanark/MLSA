@@ -7,7 +7,7 @@ import mongoose from 'mongoose';
 // PUT /api/admin/messages/[id]/reply - Reply to message
 export async function PUT(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     // Apply admin auth middleware
     const authResponse = await adminAuthMiddleware(request);

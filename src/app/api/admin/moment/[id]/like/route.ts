@@ -6,7 +6,7 @@ import mongoose from 'mongoose';
 // PUT /api/moments/[id]/like - Like a moment
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectToDatabase();
