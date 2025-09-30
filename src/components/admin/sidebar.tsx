@@ -1,7 +1,7 @@
-"use client"
-import { useRouter, usePathname } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
+"use client";
+import { useRouter, usePathname } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   LayoutDashboard,
   Users,
@@ -16,33 +16,78 @@ import {
   ImageIcon,
   Bell,
   Shield,
-} from "lucide-react"
+} from "lucide-react";
 
 const sidebarItems = [
-  { icon: LayoutDashboard, label: "Overview", href: "/admin/dashboard", badge: null },
-  { icon: Users, label: "Team Management", href: "/admin/dashboard/team", badge: null },
-  { icon: Calendar, label: "Events", href: "/admin/dashboard/events", badge: "3" },
-  { icon: FileText, label: "Applications", href: "/admin/dashboard/applications", badge: "23" },
-  { icon: BarChart3, label: "Resources", href: "/admin/dashboard/resources", badge: null },
-  { icon: ImageIcon, label: "Happy Moments", href: "/admin/dashboard/moments", badge: null },
-  { icon: MessageSquare, label: "Messages", href: "/admin/dashboard/messages", badge: "5" },
-  { icon: Bell, label: "Announcements", href: "/admin/dashboard/announcements", badge: null },
-  { icon: Settings, label: "Settings", href: "/admin/dashboard/settings", badge: null },
-]
+  {
+    icon: LayoutDashboard,
+    label: "Overview",
+    href: "/admin/dashboard",
+    badge: null,
+  },
+  {
+    icon: Users,
+    label: "Team Management",
+    href: "/admin/dashboard/team",
+    badge: null,
+  },
+  {
+    icon: Calendar,
+    label: "Events",
+    href: "/admin/dashboard/events",
+    badge: "3",
+  },
+  {
+    icon: FileText,
+    label: "Applications",
+    href: "/admin/dashboard/applications",
+    badge: "23",
+  },
+  {
+    icon: BarChart3,
+    label: "Resources",
+    href: "/admin/dashboard/resources",
+    badge: null,
+  },
+  {
+    icon: ImageIcon,
+    label: "Happy Moments",
+    href: "/admin/dashboard/moments",
+    badge: null,
+  },
+  {
+    icon: MessageSquare,
+    label: "Messages",
+    href: "/admin/dashboard/messages",
+    badge: "5",
+  },
+  {
+    icon: Bell,
+    label: "Announcements",
+    href: "/admin/dashboard/announcements",
+    badge: null,
+  },
+  {
+    icon: Settings,
+    label: "Settings",
+    href: "/admin/dashboard/settings",
+    badge: null,
+  },
+];
 
 interface SidebarProps {
-  isCollapsed: boolean
-  onToggle: () => void
+  isCollapsed: boolean;
+  onToggle: () => void;
 }
 
 export default function AdminSidebar({ isCollapsed, onToggle }: SidebarProps) {
-  const router = useRouter()
-  const pathname = usePathname()
+  const router = useRouter();
+  const pathname = usePathname();
 
   const handleLogout = () => {
-    localStorage.removeItem("adminToken")
-    router.push("/admin/login")
-  }
+    localStorage.removeItem("adminToken");
+    router.push("/admin/login");
+  };
 
   return (
     <div
@@ -64,8 +109,17 @@ export default function AdminSidebar({ isCollapsed, onToggle }: SidebarProps) {
               </div>
             </div>
           )}
-          <Button variant="ghost" size="sm" onClick={onToggle} className="h-8 w-8 p-0">
-            {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onToggle}
+            className="h-8 w-8 p-0"
+          >
+            {isCollapsed ? (
+              <ChevronRight className="h-4 w-4" />
+            ) : (
+              <ChevronLeft className="h-4 w-4" />
+            )}
           </Button>
         </div>
       </div>
@@ -73,12 +127,14 @@ export default function AdminSidebar({ isCollapsed, onToggle }: SidebarProps) {
       {/* Navigation */}
       <div className="flex-1 p-2 space-y-1">
         {sidebarItems.map((item) => {
-          const isActive = pathname === item.href
+          const isActive = pathname === item.href;
           return (
             <Button
               key={item.href}
               variant={isActive ? "secondary" : "ghost"}
-              className={`w-full justify-start h-10 ${isCollapsed ? "px-2" : "px-3"}`}
+              className={`w-full justify-start h-10 ${
+                isCollapsed ? "px-2" : "px-3"
+              }`}
               onClick={() => router.push(item.href)}
             >
               <item.icon className={`h-4 w-4 ${isCollapsed ? "" : "mr-3"}`} />
@@ -86,14 +142,17 @@ export default function AdminSidebar({ isCollapsed, onToggle }: SidebarProps) {
                 <>
                   <span className="flex-1 text-left">{item.label}</span>
                   {item.badge && (
-                    <Badge variant="secondary" className="ml-auto h-5 px-1.5 text-xs">
+                    <Badge
+                      variant="secondary"
+                      className="ml-auto h-5 px-1.5 text-xs"
+                    >
                       {item.badge}
                     </Badge>
                   )}
                 </>
               )}
             </Button>
-          )
+          );
         })}
       </div>
 
@@ -111,5 +170,5 @@ export default function AdminSidebar({ isCollapsed, onToggle }: SidebarProps) {
         </Button>
       </div>
     </div>
-  )
+  );
 }

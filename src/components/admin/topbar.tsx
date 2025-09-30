@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,17 +9,19 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Bell, Search, User, Settings, LogOut } from "lucide-react"
-import { useRouter } from "next/navigation"
+} from "@/components/ui/dropdown-menu";
+import { Bell, Search, User, Settings, LogOut } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/use-auth";
 
 export default function AdminTopbar() {
-  const router = useRouter()
+  const router = useRouter();
+  const { user, logout } = useAuth();
 
   const handleLogout = () => {
-    localStorage.removeItem("adminToken")
-    router.push("/admin/login")
-  }
+    logout();
+    router.push("/admin/login");
+  };
 
   return (
     <div className="h-16 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
@@ -40,7 +42,9 @@ export default function AdminTopbar() {
           {/* Notifications */}
           <Button variant="ghost" size="sm" className="relative">
             <Bell className="h-4 w-4" />
-            <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 text-xs">3</Badge>
+            <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 text-xs">
+              3
+            </Badge>
           </Button>
 
           {/* User Menu */}
@@ -50,7 +54,7 @@ export default function AdminTopbar() {
                 <div className="w-6 h-6 rounded-full bg-gradient-to-r from-primary to-secondary flex items-center justify-center">
                   <User className="h-3 w-3 text-primary-foreground" />
                 </div>
-                <span className="hidden sm:inline">Admin</span>
+                <span className="hidden sm:inline">{user?.name}</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
@@ -61,7 +65,10 @@ export default function AdminTopbar() {
                 Settings
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleLogout} className="text-destructive">
+              <DropdownMenuItem
+                onClick={handleLogout}
+                className="text-destructive"
+              >
                 <LogOut className="mr-2 h-4 w-4" />
                 Logout
               </DropdownMenuItem>
@@ -70,5 +77,5 @@ export default function AdminTopbar() {
         </div>
       </div>
     </div>
-  )
+  );
 }
