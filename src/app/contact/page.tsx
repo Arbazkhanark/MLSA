@@ -3,6 +3,7 @@
 import type React from "react";
 
 import { useState } from "react";
+import Link from "next/link";
 import {
   Card,
   CardContent,
@@ -13,32 +14,126 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Mail, Phone, MapPin, Send, ExternalLink } from "lucide-react";
+import { 
+  Mail, 
+  Phone, 
+  MapPin, 
+  Send, 
+  ExternalLink, 
+  CheckCircle, 
+  AlertCircle,
+  Loader2 
+} from "lucide-react";
 import { Navigation } from "@/components/public/navigation";
 import { Footer } from "@/components/public/footer";
+import { toast } from "sonner";
+
+interface FormData {
+  name: string;
+  email: string;
+  phone: string;
+  subject: string;
+  message: string;
+  category: "general" | "event" | "partnership" | "technical" | "other";
+  priority: "low" | "medium" | "high";
+}
 
 export default function ContactPage() {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",
+    phone: "",
     subject: "",
     message: "",
+    category: "general",
+    priority: "medium",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission
-    console.log("Form submitted:", formData);
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch('/api/admin/message', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || 'Failed to send message');
+      }
+
+      if (result.success) {
+        toast.success("Message sent successfully!");
+        setIsSubmitted(true);
+        // Reset form
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          subject: "",
+          message: "",
+          category: "general",
+          priority: "medium",
+        });
+      } else {
+        throw new Error(result.message || 'Failed to send message');
+      }
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to send message. Please try again.";
+      toast.error(errorMessage);
+      console.error('Error sending message:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     setFormData((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
     }));
   };
+
+  if (isSubmitted) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+        <Navigation />
+        <section className="relative py-20 px-4 overflow-hidden">
+          <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+          <div className="container mx-auto text-center relative z-10">
+            <div className="animate-fade-in-up">
+              <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-6" />
+              <h1 className="text-4xl md:text-5xl font-bold mb-6">
+                Message Sent!
+              </h1>
+              <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+                Thank you for reaching out! We&apos;ve received your message and will get back to you soon.
+              </p>
+              <div className="flex gap-4 justify-center">
+                <Button onClick={() => setIsSubmitted(false)}>
+                  Send Another Message
+                </Button>
+                <Button variant="outline" asChild>
+                  <Link href="/">Back to Home</Link>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </section>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
@@ -52,8 +147,7 @@ export default function ContactPage() {
               Get In Touch
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto text-balance">
-              Have questions? Want to collaborate? We&#39;d love to hear from
-              you!
+              Have questions? Want to collaborate? We&apos;d love to hear from you!
             </p>
           </div>
         </div>
@@ -72,8 +166,7 @@ export default function ContactPage() {
                     Send us a Message
                   </CardTitle>
                   <CardDescription>
-                    Fill out the form below and we&#39;ll get back to you as
-                    soon as possible.
+                    Fill out the form below and we&apos;ll get back to you as soon as possible.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -84,7 +177,7 @@ export default function ContactPage() {
                           htmlFor="name"
                           className="block text-sm font-medium mb-2"
                         >
-                          Full Name
+                          Full Name *
                         </label>
                         <Input
                           id="name"
@@ -93,6 +186,7 @@ export default function ContactPage() {
                           onChange={handleChange}
                           placeholder="Your full name"
                           required
+                          disabled={isSubmitting}
                         />
                       </div>
                       <div>
@@ -100,7 +194,7 @@ export default function ContactPage() {
                           htmlFor="email"
                           className="block text-sm font-medium mb-2"
                         >
-                          Email Address
+                          Email Address *
                         </label>
                         <Input
                           id="email"
@@ -110,31 +204,99 @@ export default function ContactPage() {
                           onChange={handleChange}
                           placeholder="your.email@example.com"
                           required
+                          disabled={isSubmitting}
                         />
                       </div>
                     </div>
-                    <div>
-                      <label
-                        htmlFor="subject"
-                        className="block text-sm font-medium mb-2"
-                      >
-                        Subject
-                      </label>
-                      <Input
-                        id="subject"
-                        name="subject"
-                        value={formData.subject}
-                        onChange={handleChange}
-                        placeholder="What's this about?"
-                        required
-                      />
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label
+                          htmlFor="phone"
+                          className="block text-sm font-medium mb-2"
+                        >
+                          Phone Number
+                        </label>
+                        <Input
+                          id="phone"
+                          name="phone"
+                          type="tel"
+                          value={formData.phone}
+                          onChange={handleChange}
+                          placeholder="+1 (555) 123-4567"
+                          disabled={isSubmitting}
+                        />
+                      </div>
+                      <div>
+                        <label
+                          htmlFor="category"
+                          className="block text-sm font-medium mb-2"
+                        >
+                          Category
+                        </label>
+                        <select
+                          id="category"
+                          name="category"
+                          value={formData.category}
+                          onChange={handleChange}
+                          className="w-full px-3 py-2 border border-border rounded-md bg-background text-sm"
+                          disabled={isSubmitting}
+                        >
+                          <option value="general">General Inquiry</option>
+                          <option value="event">Event Related</option>
+                          <option value="partnership">Partnership</option>
+                          <option value="technical">Technical Support</option>
+                          <option value="other">Other</option>
+                        </select>
+                      </div>
                     </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label
+                          htmlFor="subject"
+                          className="block text-sm font-medium mb-2"
+                        >
+                          Subject *
+                        </label>
+                        <Input
+                          id="subject"
+                          name="subject"
+                          value={formData.subject}
+                          onChange={handleChange}
+                          placeholder="What&apos;s this about?"
+                          required
+                          disabled={isSubmitting}
+                        />
+                      </div>
+                      <div>
+                        <label
+                          htmlFor="priority"
+                          className="block text-sm font-medium mb-2"
+                        >
+                          Priority
+                        </label>
+                        <select
+                          id="priority"
+                          name="priority"
+                          value={formData.priority}
+                          onChange={handleChange}
+                          className="w-full px-3 py-2 border border-border rounded-md bg-background text-sm"
+                          disabled={isSubmitting}
+                        >
+                          <option value="low">Low</option>
+                          <option value="medium">Medium</option>
+                          <option value="high">High</option>
+                        </select>
+                      </div>
+                    </div>
+
                     <div>
                       <label
                         htmlFor="message"
                         className="block text-sm font-medium mb-2"
                       >
-                        Message
+                        Message *
                       </label>
                       <Textarea
                         id="message"
@@ -144,12 +306,31 @@ export default function ContactPage() {
                         placeholder="Tell us more about your inquiry..."
                         rows={6}
                         required
+                        disabled={isSubmitting}
                       />
                     </div>
-                    <Button type="submit" className="w-full">
-                      <Send className="h-4 w-4 mr-2" />
-                      Send Message
+
+                    <Button 
+                      type="submit" 
+                      className="w-full" 
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Sending...
+                        </>
+                      ) : (
+                        <>
+                          <Send className="h-4 w-4 mr-2" />
+                          Send Message
+                        </>
+                      )}
                     </Button>
+
+                    <p className="text-xs text-muted-foreground text-center">
+                      Fields marked with * are required. We typically respond within 24-48 hours.
+                    </p>
                   </form>
                 </CardContent>
               </Card>
@@ -256,6 +437,24 @@ export default function ContactPage() {
                         <ExternalLink className="h-3 w-3 ml-1" />
                       </Button>
                     ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Response Time Info */}
+              <Card className="border-border/50 bg-blue-50/50">
+                <CardHeader>
+                  <CardTitle className="text-sm flex items-center gap-2">
+                    <AlertCircle className="h-4 w-4 text-blue-600" />
+                    What to Expect
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2 text-sm text-muted-foreground">
+                    <p>• Response within 24-48 hours</p>
+                    <p>• Detailed answers to your questions</p>
+                    <p>• Follow-up if needed</p>
+                    <p>• Event invitations when relevant</p>
                   </div>
                 </CardContent>
               </Card>

@@ -6,120 +6,132 @@ import { Button } from "@/components/ui/button"
 import { Clock, MapPin, Users, CheckCircle, ArrowRight, Calendar, Briefcase } from "lucide-react"
 import { Navigation } from "@/components/public/navigation"
 import { Footer } from "@/components/public/footer"
+import useSWR from "swr"
+import { useState, useEffect } from "react"
 
-interface Position {
-  id: number
+interface Opening {
+  _id: string
   title: string
-  department: string
-  type: string
-  location: string
-  deadline: string
   description: string
   requirements: string[]
   responsibilities: string[]
-  benefits: string[]
-  formUrl: string
+  qualifications: string[]
+  skills: string[]
+  type: "full-time" | "part-time" | "internship" | "volunteer"
+  category: "technical" | "non-technical" | "leadership" | "creative"
+  location: string
+  deadline: string
+  status: "active" | "inactive" | "draft"
+  maxApplications: number
+  currentApplications: number
+  createdAt: string
+  updatedAt: string
 }
 
-const openPositions: Position[] = [
-  {
-    id: 1,
-    title: "Technical Content Creator",
-    department: "Content Team",
-    type: "Part-time",
-    location: "Remote",
-    deadline: "March 15, 2025",
-    description:
-      "Join our content team to create engaging technical tutorials, blog posts, and educational materials for our community.",
-    requirements: [
-      "Strong technical writing skills",
-      "Experience with web technologies (HTML, CSS, JavaScript)",
-      "Familiarity with Microsoft technologies",
-      "Portfolio of technical content",
-      "Excellent communication skills",
-    ],
-    responsibilities: [
-      "Create technical tutorials and blog posts",
-      "Develop educational content for workshops",
-      "Collaborate with the technical team on documentation",
-      "Engage with community members through content",
-      "Maintain content calendar and publishing schedule",
-    ],
-    benefits: [
-      "Flexible working hours",
-      "Microsoft certification opportunities",
-      "Networking with industry professionals",
-      "Portfolio building opportunities",
-      "Leadership development",
-    ],
-    formUrl: "https://forms.google.com/sample-form-1",
-  },
-  {
-    id: 2,
-    title: "Event Coordinator",
-    department: "Events Team",
-    type: "Volunteer",
-    location: "Hybrid",
-    deadline: "March 20, 2025",
-    description: "Help organize and coordinate amazing events, workshops, and hackathons for our growing community.",
-    requirements: [
-      "Event planning experience (preferred)",
-      "Strong organizational skills",
-      "Excellent interpersonal communication",
-      "Ability to work in a team environment",
-      "Passion for community building",
-    ],
-    responsibilities: [
-      "Plan and coordinate community events",
-      "Manage event logistics and vendor relationships",
-      "Coordinate with speakers and sponsors",
-      "Ensure smooth event execution",
-      "Gather feedback and improve future events",
-    ],
-    benefits: [
-      "Event management experience",
-      "Professional networking opportunities",
-      "Certificate of participation",
-      "Skill development workshops",
-      "Recognition and awards",
-    ],
-    formUrl: "https://forms.google.com/sample-form-2",
-  },
-  {
-    id: 3,
-    title: "Social Media Manager",
-    department: "Marketing Team",
-    type: "Part-time",
-    location: "Remote",
-    deadline: "March 25, 2025",
-    description:
-      "Lead our social media presence and help grow our community through engaging content and strategic campaigns.",
-    requirements: [
-      "Social media marketing experience",
-      "Content creation skills (graphics, videos)",
-      "Understanding of social media analytics",
-      "Creative mindset and attention to detail",
-      "Knowledge of design tools (Canva, Figma, etc.)",
-    ],
-    responsibilities: [
-      "Manage social media accounts and content calendar",
-      "Create engaging posts and visual content",
-      "Monitor social media metrics and engagement",
-      "Collaborate with content team on campaigns",
-      "Engage with community members online",
-    ],
-    benefits: [
-      "Digital marketing experience",
-      "Creative portfolio development",
-      "Access to design tools and resources",
-      "Marketing certification opportunities",
-      "Professional references",
-    ],
-    formUrl: "https://forms.google.com/sample-form-3",
-  },
-]
+const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
 export default function HiringPage() {
+  const [activeOpenings, setActiveOpenings] = useState<Opening[]>([])
+  
+  // Fetch only active openings for the public hiring page
+  const { data, error, isLoading } = useSWR<{ data: Opening[], total: number }>(
+    '/api/admin/opening?status=active',
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    }
+  )
+
+  useEffect(() => {
+    if (data?.data) {
+      setActiveOpenings(data.data)
+    }
+  }, [data])
+
+  // Format date to readable string
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    })
+  }
+
+  // Check if deadline is approaching (within 7 days)
+  const isDeadlineApproaching = (deadline: string) => {
+    const deadlineDate = new Date(deadline)
+    const today = new Date()
+    const diffTime = deadlineDate.getTime() - today.getTime()
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+    return diffDays <= 7 && diffDays >= 0
+  }
+
+  // Get type display name
+  const getTypeDisplayName = (type: Opening["type"]) => {
+    switch (type) {
+      case "full-time": return "Full-time"
+      case "part-time": return "Part-time"
+      case "internship": return "Internship"
+      case "volunteer": return "Volunteer"
+      default: return type
+    }
+  }
+
+  // Get category display name
+  const getCategoryDisplayName = (category: Opening["category"]) => {
+    switch (category) {
+      case "technical": return "Technical"
+      case "non-technical": return "Non-technical"
+      case "leadership": return "Leadership"
+      case "creative": return "Creative"
+      default: return category
+    }
+  }
+
+  // Get badge color based on type
+  const getTypeBadgeVariant = (type: Opening["type"]) => {
+    switch (type) {
+      case "full-time": return "default"
+      case "part-time": return "secondary"
+      case "internship": return "outline"
+      case "volunteer": return "destructive"
+      default: return "outline"
+    }
+  }
+
+  // Get badge color based on category
+  const getCategoryBadgeVariant = (category: Opening["category"]) => {
+    switch (category) {
+      case "technical": return "default"
+      case "non-technical": return "secondary"
+      case "leadership": return "destructive"
+      case "creative": return "outline"
+      default: return "outline"
+    }
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        <div className="pt-24 pb-16 text-center">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h1 className="text-4xl font-bold mb-4">Something went wrong</h1>
+            <p className="text-muted-foreground mb-8">
+              Unable to load openings at the moment. Please try again later.
+            </p>
+            <Button onClick={() => window.location.reload()}>
+              Try Again
+            </Button>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
@@ -134,7 +146,7 @@ export default function HiringPage() {
           <div className="flex items-center justify-center space-x-8 text-sm text-muted-foreground">
             <div className="flex items-center">
               <Briefcase className="w-4 h-4 mr-2" />
-              {openPositions.length} Open Positions
+              {isLoading ? "Loading..." : `${activeOpenings.length} Open Positions`}
             </div>
             <div className="flex items-center">
               <Users className="w-4 h-4 mr-2" />
@@ -206,89 +218,124 @@ export default function HiringPage() {
             <p className="text-xl text-muted-foreground">Find the perfect role to contribute to our community</p>
           </div>
 
-          <div className="space-y-8">
-            {openPositions.map((position) => (
-              <Card key={position.id} className="overflow-hidden">
-                <CardHeader className="bg-gradient-to-r from-primary/5 to-accent/5">
-                  <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-                    <div>
-                      <CardTitle className="text-2xl mb-2">{position.title}</CardTitle>
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        <Badge variant="secondary">{position.department}</Badge>
-                        <Badge variant="outline">{position.type}</Badge>
+          {isLoading ? (
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+              <p className="text-muted-foreground">Loading openings...</p>
+            </div>
+          ) : activeOpenings.length === 0 ? (
+            <div className="text-center py-12">
+              <Briefcase className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-xl font-semibold mb-2">No Open Positions Available</h3>
+              <p className="text-muted-foreground mb-6">
+                Check back later for new opportunities to join our team.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-8">
+              {activeOpenings.map((opening) => (
+                <Card key={opening._id} className="overflow-hidden">
+                  <CardHeader className="bg-gradient-to-r from-primary/5 to-accent/5">
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+                      <div>
+                        <CardTitle className="text-2xl mb-2">{opening.title}</CardTitle>
+                        <div className="flex flex-wrap gap-2 mb-4">
+                          <Badge variant={getCategoryBadgeVariant(opening.category)}>
+                            {getCategoryDisplayName(opening.category)}
+                          </Badge>
+                          <Badge variant={getTypeBadgeVariant(opening.type)}>
+                            {getTypeDisplayName(opening.type)}
+                          </Badge>
+                          {isDeadlineApproaching(opening.deadline) && (
+                            <Badge variant="destructive" className="animate-pulse">
+                              Deadline Approaching
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex flex-col space-y-2 text-sm text-muted-foreground">
+                        <div className="flex items-center">
+                          <MapPin className="w-4 h-4 mr-2" />
+                          {opening.location}
+                        </div>
+                        <div className="flex items-center">
+                          <Clock className="w-4 h-4 mr-2" />
+                          Apply by {formatDate(opening.deadline)}
+                        </div>
+                        <div className="flex items-center">
+                          <Users className="w-4 h-4 mr-2" />
+                          {opening.currentApplications} applied • {opening.maxApplications} max
+                        </div>
                       </div>
                     </div>
-                    <div className="flex flex-col space-y-2 text-sm text-muted-foreground">
-                      <div className="flex items-center">
-                        <MapPin className="w-4 h-4 mr-2" />
-                        {position.location}
+                  </CardHeader>
+
+                  <CardContent className="p-8">
+                    <p className="text-muted-foreground mb-6 leading-relaxed">{opening.description}</p>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                      <div>
+                        <h4 className="font-semibold mb-3 text-primary">Requirements</h4>
+                        <ul className="space-y-2">
+                          {opening.requirements.map((req, index) => (
+                            <li key={index} className="flex items-start text-sm">
+                              <CheckCircle className="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                              {req}
+                            </li>
+                          ))}
+                        </ul>
                       </div>
-                      <div className="flex items-center">
-                        <Clock className="w-4 h-4 mr-2" />
-                        Apply by {position.deadline}
+
+                      <div>
+                        <h4 className="font-semibold mb-3 text-accent">Responsibilities</h4>
+                        <ul className="space-y-2">
+                          {opening.responsibilities.map((resp, index) => (
+                            <li key={index} className="flex items-start text-sm">
+                              <ArrowRight className="w-4 h-4 text-accent mr-2 mt-0.5 flex-shrink-0" />
+                              {resp}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      <div>
+                        <h4 className="font-semibold mb-3 text-chart-3">Skills & Qualifications</h4>
+                        <ul className="space-y-2">
+                          {opening.skills.map((skill, index) => (
+                            <li key={index} className="flex items-start text-sm">
+                              <CheckCircle className="w-4 h-4 text-chart-3 mr-2 mt-0.5 flex-shrink-0" />
+                              {skill}
+                            </li>
+                          ))}
+                          {opening.qualifications.map((qual, index) => (
+                            <li key={index} className="flex items-start text-sm">
+                              <CheckCircle className="w-4 h-4 text-chart-3 mr-2 mt-0.5 flex-shrink-0" />
+                              {qual}
+                            </li>
+                          ))}
+                        </ul>
                       </div>
                     </div>
-                  </div>
-                </CardHeader>
 
-                <CardContent className="p-8">
-                  <p className="text-muted-foreground mb-6 leading-relaxed">{position.description}</p>
-
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div>
-                      <h4 className="font-semibold mb-3 text-primary">Requirements</h4>
-                      <ul className="space-y-2">
-                        {position.requirements.map((req, index) => (
-                          <li key={index} className="flex items-start text-sm">
-                            <CheckCircle className="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                            {req}
-                          </li>
-                        ))}
-                      </ul>
+                    <div className="mt-8 pt-6 border-t border-border">
+                      <Button size="lg" className="w-full md:w-auto">
+                        <a
+                          href={`/apply/${opening._id}`}
+                          className="flex items-center"
+                        >
+                          Apply Now
+                          <ArrowRight className="ml-2 w-5 h-5" />
+                        </a>
+                      </Button>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        Applications close on {formatDate(opening.deadline)}
+                      </p>
                     </div>
-
-                    <div>
-                      <h4 className="font-semibold mb-3 text-accent">Responsibilities</h4>
-                      <ul className="space-y-2">
-                        {position.responsibilities.map((resp, index) => (
-                          <li key={index} className="flex items-start text-sm">
-                            <ArrowRight className="w-4 h-4 text-accent mr-2 mt-0.5 flex-shrink-0" />
-                            {resp}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    <div>
-                      <h4 className="font-semibold mb-3 text-chart-3">Benefits</h4>
-                      <ul className="space-y-2">
-                        {position.benefits.map((benefit, index) => (
-                          <li key={index} className="flex items-start text-sm">
-                            <CheckCircle className="w-4 h-4 text-chart-3 mr-2 mt-0.5 flex-shrink-0" />
-                            {benefit}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-
-                  <div className="mt-8 pt-6 border-t border-border">
-                    <Button size="lg" className="w-full md:w-auto">
-                      <a
-                        href={position.formUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center"
-                      >
-                        Apply Now
-                        <ArrowRight className="ml-2 w-5 h-5" />
-                      </a>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -306,7 +353,7 @@ export default function HiringPage() {
                 1
               </div>
               <h3 className="font-semibold mb-2">Apply Online</h3>
-              <p className="text-sm text-muted-foreground">Fill out the Google Form for your chosen position</p>
+              <p className="text-sm text-muted-foreground">Fill out the application form for your chosen position</p>
             </div>
 
             <div className="text-center">
@@ -314,7 +361,7 @@ export default function HiringPage() {
                 2
               </div>
               <h3 className="font-semibold mb-2">Initial Review</h3>
-              <p className="text-sm text-muted-foreground">Our team reviews your application and portfolio</p>
+              <p className="text-sm text-muted-foreground">Our team reviews your application and qualifications</p>
             </div>
 
             <div className="text-center">
