@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -18,10 +18,11 @@ import {
 } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-import { Plus, Edit, Trash2, Mail, Linkedin, Github, MapPin, Calendar } from "lucide-react"
+import { Plus, Edit, Trash2, Mail, Linkedin, Github, MapPin, Calendar, Loader2, Users } from "lucide-react"
+import { toast } from "sonner"
 
 interface TeamMember {
-  id: string
+  _id: string
   name: string
   role: string
   position: string
@@ -35,51 +36,26 @@ interface TeamMember {
   social: {
     linkedin?: string
     github?: string
+    twitter?: string
   }
+  createdAt: string
+  updatedAt: string
 }
 
-const initialTeamMembers: TeamMember[] = [
-  {
-    id: "1",
-    name: "Sarah Chen",
-    role: "President",
-    position: "MLSA Team Lead",
-    email: "sarah.chen@university.edu",
-    bio: "Passionate about AI/ML and community building. Leading our chapter towards innovation.",
-    skills: ["Python", "Machine Learning", "Leadership", "Azure"],
-    location: "San Francisco, CA",
-    joinDate: "2023-08-15",
-    status: "active",
-    avatar: "/professional-headshot-of-young-asian-tech-leader.jpg",
-    social: {
-      linkedin: "https://linkedin.com/in/sarahchen",
-      github: "https://github.com/sarahchen",
-    },
-  },
-  {
-    id: "2",
-    name: "Alex Rodriguez",
-    role: "Vice President",
-    position: "Technical Lead",
-    email: "alex.rodriguez@university.edu",
-    bio: "Full-stack developer with expertise in cloud technologies and modern web frameworks.",
-    skills: ["React", "Node.js", "Azure", "TypeScript"],
-    location: "Austin, TX",
-    joinDate: "2023-09-01",
-    status: "active",
-    avatar: "/professional-headshot-of-young-woman-software-engi.jpg",
-    social: {
-      linkedin: "https://linkedin.com/in/alexrodriguez",
-      github: "https://github.com/alexrodriguez",
-    },
-  },
-]
+interface ApiResponse<T> {
+  success: boolean
+  message?: string
+  data?: T
+  total?: number
+}
 
 export default function TeamManagementPage() {
-  const [teamMembers, setTeamMembers] = useState<TeamMember[]>(initialTeamMembers)
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([])
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
   const [editingMember, setEditingMember] = useState<TeamMember | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
+  const [loading, setLoading] = useState(true)
+  const [submitting, setSubmitting] = useState(false)
 
   const [formData, setFormData] = useState({
     name: "",
@@ -93,6 +69,34 @@ export default function TeamManagementPage() {
     linkedin: "",
     github: "",
   })
+
+  // Fetch team members on component mount
+  useEffect(() => {
+    fetchTeamMembers()
+  }, [])
+
+  const fetchTeamMembers = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch("/api/admin/team", {
+        method: "GET",
+        credentials: "include",
+      })
+
+      const data: ApiResponse<TeamMember[]> = await response.json()
+
+      if (data.success && data.data) {
+        setTeamMembers(data.data)
+      } else {
+        toast.error("Failed to fetch team members")
+      }
+    } catch (error) {
+      console.error("Error fetching team members:", error)
+      toast.error("Failed to fetch team members")
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const resetForm = () => {
     setFormData({
@@ -109,28 +113,51 @@ export default function TeamManagementPage() {
     })
   }
 
-  const handleAddMember = () => {
-    const newMember: TeamMember = {
-      id: Date.now().toString(),
-      name: formData.name,
-      role: formData.role,
-      position: formData.position,
-      email: formData.email,
-      bio: formData.bio,
-      skills: formData.skills.split(",").map((s) => s.trim()),
-      location: formData.location,
-      joinDate: new Date().toISOString().split("T")[0],
-      status: formData.status,
-      avatar: "/placeholder.svg?height=100&width=100",
-      social: {
-        linkedin: formData.linkedin || undefined,
-        github: formData.github || undefined,
-      },
-    }
+  const handleAddMember = async () => {
+    try {
+      setSubmitting(true)
+      
+      const newMemberData = {
+        name: formData.name,
+        role: formData.role,
+        position: formData.position,
+        email: formData.email,
+        bio: formData.bio,
+        skills: formData.skills.split(",").map((s) => s.trim()).filter(s => s.length > 0),
+        location: formData.location,
+        joinDate: new Date().toISOString().split("T")[0],
+        status: formData.status,
+        social: {
+          linkedin: formData.linkedin || undefined,
+          github: formData.github || undefined,
+        },
+      }
 
-    setTeamMembers([...teamMembers, newMember])
-    setIsAddDialogOpen(false)
-    resetForm()
+      const response = await fetch("/api/admin/team", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(newMemberData),
+      })
+
+      const data: ApiResponse<TeamMember> = await response.json()
+
+      if (data.success && data.data) {
+        setTeamMembers(prev => [data.data!, ...prev])
+        setIsAddDialogOpen(false)
+        resetForm()
+        toast.success("Team member added successfully!")
+      } else {
+        toast.error(data.message || "Failed to add team member")
+      }
+    } catch (error) {
+      console.error("Error adding team member:", error)
+      toast.error("Failed to add team member")
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   const handleEditMember = (member: TeamMember) => {
@@ -149,32 +176,79 @@ export default function TeamManagementPage() {
     })
   }
 
-  const handleUpdateMember = () => {
+  const handleUpdateMember = async () => {
     if (!editingMember) return
 
-    const updatedMember: TeamMember = {
-      ...editingMember,
-      name: formData.name,
-      role: formData.role,
-      position: formData.position,
-      email: formData.email,
-      bio: formData.bio,
-      skills: formData.skills.split(",").map((s) => s.trim()),
-      location: formData.location,
-      status: formData.status,
-      social: {
-        linkedin: formData.linkedin || undefined,
-        github: formData.github || undefined,
-      },
-    }
+    try {
+      setSubmitting(true)
+      
+      const updatedData = {
+        name: formData.name,
+        role: formData.role,
+        position: formData.position,
+        email: formData.email,
+        bio: formData.bio,
+        skills: formData.skills.split(",").map((s) => s.trim()).filter(s => s.length > 0),
+        location: formData.location,
+        status: formData.status,
+        social: {
+          linkedin: formData.linkedin || undefined,
+          github: formData.github || undefined,
+        },
+      }
 
-    setTeamMembers(teamMembers.map((member) => (member.id === editingMember.id ? updatedMember : member)))
-    setEditingMember(null)
-    resetForm()
+      const response = await fetch(`/api/admin/team/${editingMember._id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(updatedData),
+      })
+
+      const data: ApiResponse<TeamMember> = await response.json()
+
+      if (data.success && data.data) {
+        setTeamMembers(prev => 
+          prev.map((member) => member._id === editingMember._id ? data.data! : member)
+        )
+        setEditingMember(null)
+        resetForm()
+        toast.success("Team member updated successfully!")
+      } else {
+        toast.error(data.message || "Failed to update team member")
+      }
+    } catch (error) {
+      console.error("Error updating team member:", error)
+      toast.error("Failed to update team member")
+    } finally {
+      setSubmitting(false)
+    }
   }
 
-  const handleDeleteMember = (id: string) => {
-    setTeamMembers(teamMembers.filter((member) => member.id !== id))
+  const handleDeleteMember = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this team member?")) {
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/admin/team/${id}`, {
+        method: "DELETE",
+        credentials: "include",
+      })
+
+      const data: ApiResponse<void> = await response.json()
+
+      if (data.success) {
+        setTeamMembers(prev => prev.filter((member) => member._id !== id))
+        toast.success("Team member deleted successfully!")
+      } else {
+        toast.error(data.message || "Failed to delete team member")
+      }
+    } catch (error) {
+      console.error("Error deleting team member:", error)
+      toast.error("Failed to delete team member")
+    }
   }
 
   const filteredMembers = teamMembers.filter(
@@ -183,6 +257,29 @@ export default function TeamManagementPage() {
       member.role.toLowerCase().includes(searchTerm.toLowerCase()) ||
       member.position.toLowerCase().includes(searchTerm.toLowerCase()),
   )
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold">Team Management</h1>
+            <p className="text-muted-foreground">Manage MLSA team members and their roles</p>
+          </div>
+          <Button disabled>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Team Member
+          </Button>
+        </div>
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center space-y-4">
+            <Loader2 className="h-8 w-8 animate-spin mx-auto" />
+            <p className="text-muted-foreground">Loading team members...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
@@ -205,26 +302,28 @@ export default function TeamManagementPage() {
             </DialogHeader>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Full Name</Label>
+                <Label htmlFor="name">Full Name *</Label>
                 <Input
                   id="name"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="Enter full name"
+                  required
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">Email *</Label>
                 <Input
                   id="email"
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   placeholder="Enter email address"
+                  required
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="role">Role</Label>
+                <Label htmlFor="role">Role *</Label>
                 <Select value={formData.role} onValueChange={(value) => setFormData({ ...formData, role: value })}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select role" />
@@ -242,21 +341,23 @@ export default function TeamManagementPage() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="position">Position</Label>
+                <Label htmlFor="position">Position *</Label>
                 <Input
                   id="position"
                   value={formData.position}
                   onChange={(e) => setFormData({ ...formData, position: e.target.value })}
                   placeholder="e.g., MLSA Team Lead"
+                  required
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="location">Location</Label>
+                <Label htmlFor="location">Location *</Label>
                 <Input
                   id="location"
                   value={formData.location}
                   onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                   placeholder="City, State"
+                  required
                 />
               </div>
               <div className="space-y-2">
@@ -275,22 +376,24 @@ export default function TeamManagementPage() {
                 </Select>
               </div>
               <div className="col-span-2 space-y-2">
-                <Label htmlFor="bio">Bio</Label>
+                <Label htmlFor="bio">Bio *</Label>
                 <Textarea
                   id="bio"
                   value={formData.bio}
                   onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
                   placeholder="Brief bio about the team member"
                   rows={3}
+                  required
                 />
               </div>
               <div className="col-span-2 space-y-2">
-                <Label htmlFor="skills">Skills (comma-separated)</Label>
+                <Label htmlFor="skills">Skills (comma-separated) *</Label>
                 <Input
                   id="skills"
                   value={formData.skills}
                   onChange={(e) => setFormData({ ...formData, skills: e.target.value })}
                   placeholder="Python, React, Azure, Leadership"
+                  required
                 />
               </div>
               <div className="space-y-2">
@@ -313,10 +416,19 @@ export default function TeamManagementPage() {
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
+              <Button variant="outline" onClick={() => setIsAddDialogOpen(false)} disabled={submitting}>
                 Cancel
               </Button>
-              <Button onClick={handleAddMember}>Add Member</Button>
+              <Button onClick={handleAddMember} disabled={submitting}>
+                {submitting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Adding...
+                  </>
+                ) : (
+                  "Add Member"
+                )}
+              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -331,78 +443,114 @@ export default function TeamManagementPage() {
         />
       </div>
 
-      <div className="grid gap-6">
-        {filteredMembers.map((member) => (
-          <Card key={member.id}>
-            <CardContent className="p-6">
-              <div className="flex items-start gap-4">
-                <Avatar className="h-16 w-16">
-                  <AvatarImage src={member.avatar || "/placeholder.svg"} alt={member.name} />
-                  <AvatarFallback>
-                    {member.name
-                      .split(" ")
-                      .map((n) => n[0])
-                      .join("")}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex-1">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h3 className="text-xl font-semibold">{member.name}</h3>
-                      <p className="text-primary font-medium">{member.role}</p>
-                      <p className="text-sm text-muted-foreground">{member.position}</p>
+      {filteredMembers.length === 0 ? (
+        <Card>
+          <CardContent className="p-12 text-center">
+            <div className="space-y-2">
+              <Users className="h-12 w-12 mx-auto text-muted-foreground" />
+              <h3 className="text-lg font-semibold">No team members found</h3>
+              <p className="text-muted-foreground">
+                {searchTerm ? "No team members match your search." : "Get started by adding your first team member."}
+              </p>
+              {!searchTerm && (
+                <Button onClick={() => setIsAddDialogOpen(true)} className="mt-4">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Team Member
+                </Button>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid gap-6">
+          {filteredMembers.map((member) => (
+            <Card key={member._id}>
+              <CardContent className="p-6">
+                <div className="flex items-start gap-4">
+                  <Avatar className="h-16 w-16">
+                    <AvatarImage src={member.avatar || "/placeholder.svg"} alt={member.name} />
+                    <AvatarFallback>
+                      {member.name
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <h3 className="text-xl font-semibold">{member.name}</h3>
+                        <p className="text-primary font-medium">{member.role}</p>
+                        <p className="text-sm text-muted-foreground">{member.position}</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge variant={member.status === "active" ? "default" : "secondary"}>
+                          {member.status}
+                        </Badge>
+                        <Button variant="outline" size="sm" onClick={() => handleEditMember(member)}>
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => handleDeleteMember(member._id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant={member.status === "active" ? "default" : "secondary"}>{member.status}</Badge>
-                      <Button variant="outline" size="sm" onClick={() => handleEditMember(member)}>
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button variant="outline" size="sm" onClick={() => handleDeleteMember(member.id)}>
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                    <p className="text-sm text-muted-foreground mt-2">{member.bio}</p>
+                    <div className="flex flex-wrap gap-2 mt-3">
+                      {member.skills.map((skill) => (
+                        <Badge key={skill} variant="outline">
+                          {skill}
+                        </Badge>
+                      ))}
                     </div>
-                  </div>
-                  <p className="text-sm text-muted-foreground mt-2">{member.bio}</p>
-                  <div className="flex flex-wrap gap-2 mt-3">
-                    {member.skills.map((skill) => (
-                      <Badge key={skill} variant="outline">
-                        {skill}
-                      </Badge>
-                    ))}
-                  </div>
-                  <div className="flex items-center gap-4 mt-4 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-1">
-                      <Mail className="h-4 w-4" />
-                      {member.email}
+                    <div className="flex items-center gap-4 mt-4 text-sm text-muted-foreground">
+                      <div className="flex items-center gap-1">
+                        <Mail className="h-4 w-4" />
+                        {member.email}
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <MapPin className="h-4 w-4" />
+                        {member.location}
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Calendar className="h-4 w-4" />
+                        Joined {new Date(member.joinDate).toLocaleDateString()}
+                      </div>
+                      {member.social.linkedin && (
+                        <a 
+                          href={member.social.linkedin} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="hover:text-primary transition-colors"
+                        >
+                          <Linkedin className="h-4 w-4" />
+                        </a>
+                      )}
+                      {member.social.github && (
+                        <a 
+                          href={member.social.github} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="hover:text-primary transition-colors"
+                        >
+                          <Github className="h-4 w-4" />
+                        </a>
+                      )}
                     </div>
-                    <div className="flex items-center gap-1">
-                      <MapPin className="h-4 w-4" />
-                      {member.location}
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Calendar className="h-4 w-4" />
-                      Joined {new Date(member.joinDate).toLocaleDateString()}
-                    </div>
-                    {member.social.linkedin && (
-                      <a href={member.social.linkedin} target="_blank" rel="noopener noreferrer">
-                        <Linkedin className="h-4 w-4 hover:text-primary" />
-                      </a>
-                    )}
-                    {member.social.github && (
-                      <a href={member.social.github} target="_blank" rel="noopener noreferrer">
-                        <Github className="h-4 w-4 hover:text-primary" />
-                      </a>
-                    )}
                   </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
 
       {/* Edit Dialog */}
-      <Dialog open={!!editingMember} onOpenChange={() => setEditingMember(null)}>
+      <Dialog open={!!editingMember} onOpenChange={() => !submitting && setEditingMember(null)}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>Edit Team Member</DialogTitle>
@@ -410,24 +558,26 @@ export default function TeamManagementPage() {
           </DialogHeader>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="edit-name">Full Name</Label>
+              <Label htmlFor="edit-name">Full Name *</Label>
               <Input
                 id="edit-name"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="edit-email">Email</Label>
+              <Label htmlFor="edit-email">Email *</Label>
               <Input
                 id="edit-email"
                 type="email"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="edit-role">Role</Label>
+              <Label htmlFor="edit-role">Role *</Label>
               <Select value={formData.role} onValueChange={(value) => setFormData({ ...formData, role: value })}>
                 <SelectTrigger>
                   <SelectValue />
@@ -445,19 +595,21 @@ export default function TeamManagementPage() {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="edit-position">Position</Label>
+              <Label htmlFor="edit-position">Position *</Label>
               <Input
                 id="edit-position"
                 value={formData.position}
                 onChange={(e) => setFormData({ ...formData, position: e.target.value })}
+                required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="edit-location">Location</Label>
+              <Label htmlFor="edit-location">Location *</Label>
               <Input
                 id="edit-location"
                 value={formData.location}
                 onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                required
               />
             </div>
             <div className="space-y-2">
@@ -476,20 +628,22 @@ export default function TeamManagementPage() {
               </Select>
             </div>
             <div className="col-span-2 space-y-2">
-              <Label htmlFor="edit-bio">Bio</Label>
+              <Label htmlFor="edit-bio">Bio *</Label>
               <Textarea
                 id="edit-bio"
                 value={formData.bio}
                 onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
                 rows={3}
+                required
               />
             </div>
             <div className="col-span-2 space-y-2">
-              <Label htmlFor="edit-skills">Skills (comma-separated)</Label>
+              <Label htmlFor="edit-skills">Skills (comma-separated) *</Label>
               <Input
                 id="edit-skills"
                 value={formData.skills}
                 onChange={(e) => setFormData({ ...formData, skills: e.target.value })}
+                required
               />
             </div>
             <div className="space-y-2">
@@ -510,10 +664,19 @@ export default function TeamManagementPage() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setEditingMember(null)}>
+            <Button variant="outline" onClick={() => setEditingMember(null)} disabled={submitting}>
               Cancel
             </Button>
-            <Button onClick={handleUpdateMember}>Update Member</Button>
+            <Button onClick={handleUpdateMember} disabled={submitting}>
+              {submitting ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Updating...
+                </>
+              ) : (
+                "Update Member"
+              )}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

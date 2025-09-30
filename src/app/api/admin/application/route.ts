@@ -300,6 +300,7 @@ export async function GET(request: NextRequest) {
       filter.position = position;
     }
 
+    getOpeningModel();
     const Application = getApplicationModel();
     const applications = await Application.find(filter)
       .populate('openingId', 'title description')

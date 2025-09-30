@@ -436,9 +436,198 @@
 
 
 
+// // hooks/useAuth.ts
+// "use client"
+// import { useState, useEffect } from "react"
+// import { toast } from "sonner"
+
+// interface User {
+//   id: string
+//   name: string
+//   email: string
+//   role: string
+//   profileImage?: string
+//   bio?: string
+//   socialLinks?: {
+//     twitter?: string
+//     facebook?: string
+//     instagram?: string
+//     linkedin?: string
+//   }
+//   isActive: boolean
+//   lastLogin?: string
+//   createdAt: string
+//   updatedAt: string
+// }
+
+// interface AuthState {
+//   user: User | null
+//   loading: boolean
+//   error: string | null
+// }
+
+// export function useAuth() {
+//   const [authState, setAuthState] = useState<AuthState>({
+//     user: null,
+//     loading: true,
+//     error: null,
+//   })
+
+//   useEffect(() => {
+//     checkAuth()
+//   }, [])
+
+//   const checkAuth = async () => {
+//     try {
+//       const response = await fetch("/api/auth/me", {
+//         method: "GET",
+//         credentials: "include", // Important for cookies
+//       })
+
+//       if (response.ok) {
+//         const data = await response.json()
+//         if (data.success && data.data) {
+//           setAuthState({ user: data.data, loading: false, error: null })
+//           // Store user data in localStorage for quick access (but not tokens)
+//           localStorage.setItem("user", JSON.stringify(data.data))
+//         } else {
+//           localStorage.removeItem("user")
+//           setAuthState({ user: null, loading: false, error: null })
+//         }
+//       } else {
+//         localStorage.removeItem("user")
+//         setAuthState({ user: null, loading: false, error: null })
+//       }
+//     } catch (error) {
+//       localStorage.removeItem("user")
+//       setAuthState({ user: null, loading: false, error: "Failed to check authentication" })
+//     }
+//   }
+
+//   const login = async (email: string, password: string) => {
+//     try {
+//       setAuthState((prev) => ({ ...prev, loading: true, error: null }))
+
+//       const response = await fetch("/api/auth/login", {
+//         method: "POST",
+//         headers: { 
+//           "Content-Type": "application/json" 
+//         },
+//         credentials: "include", // Important for cookies
+//         body: JSON.stringify({ email, password }),
+//       })
+
+//       const data = await response.json()
+
+//       if (response.ok && data.success) {
+//         const userData = data.data
+//         // Store user data in localStorage for quick access (but not tokens)
+//         localStorage.setItem("user", JSON.stringify(userData))
+        
+//         setAuthState({ user: userData, loading: false, error: null })
+//         toast.success(`Welcome back, ${userData.name}!`)
+//         return { success: true, data: userData }
+//       } else {
+//         setAuthState({ user: null, loading: false, error: data.message || "Login failed" })
+//         toast.error(data.message || "Invalid credentials")
+//         return { success: false, error: data.message || "Login failed" }
+//       }
+//     } catch (error) {
+//       const errorMessage = "Login failed. Please try again."
+//       setAuthState({ user: null, loading: false, error: errorMessage })
+//       toast.error(errorMessage)
+//       return { success: false, error: errorMessage }
+//     }
+//   }
+
+//   const register = async (name: string, email: string, password: string, role: string = "writer") => {
+//     try {
+//       setAuthState((prev) => ({ ...prev, loading: true, error: null }))
+
+//       const response = await fetch("/api/auth/register", {
+//         method: "POST",
+//         headers: { "Content-Type": "application/json" },
+//         credentials: "include", // Important for cookies
+//         body: JSON.stringify({ name, email, password, role }),
+//       })
+
+//       const data = await response.json()
+
+//       if (response.ok && data.success) {
+//         const userData = data.data
+//         localStorage.setItem("user", JSON.stringify(userData))
+        
+//         setAuthState({ user: userData, loading: false, error: null })
+//         toast.success(`Welcome, ${userData.name}!`)
+//         return { success: true, data: userData }
+//       } else {
+//         setAuthState({ user: null, loading: false, error: data.message || "Registration failed" })
+//         toast.error(data.message || "Registration failed")
+//         return { success: false, error: data.message || "Registration failed" }
+//       }
+//     } catch (error) {
+//       const errorMessage = "Registration failed. Please try again."
+//       setAuthState({ user: null, loading: false, error: errorMessage })
+//       toast.error(errorMessage)
+//       return { success: false, error: errorMessage }
+//     }
+//   }
+
+//   const logout = async () => {
+//     try {
+//       await fetch("/api/auth/logout", {
+//         method: "POST",
+//         credentials: "include", // Important for cookies
+//       })
+      
+//       // Clear user data from localStorage
+//       localStorage.removeItem("user")
+//       setAuthState({ user: null, loading: false, error: null })
+//       toast.success("You have been successfully logged out.")
+//     } catch (error) {
+//       console.error("Logout error:", error)
+//       // Even if logout API fails, clear local state
+//       localStorage.removeItem("user")
+//       setAuthState({ user: null, loading: false, error: null })
+//       toast.success("You have been successfully logged out.")
+//     }
+//   }
+
+//   // Helper function to check if user is admin
+//   const isAdmin = () => {
+//     return authState.user?.role === "admin"
+//   }
+
+//   // Helper function to check if user is authenticated
+//   const isAuthenticated = () => {
+//     return !!authState.user
+//   }
+
+//   return {
+//     ...authState,
+//     login,
+//     register,
+//     logout,
+//     checkAuth,
+//     isAdmin: isAdmin(),
+//     isAuthenticated: isAuthenticated(),
+//   }
+// }
+
+
+
+
+
+
+
+
+
+
+
+
 // hooks/useAuth.ts
 "use client"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { toast } from "sonner"
 
 interface User {
@@ -473,22 +662,26 @@ export function useAuth() {
     error: null,
   })
 
-  useEffect(() => {
-    checkAuth()
-  }, [])
-
-  const checkAuth = async () => {
+  // Memoize checkAuth to prevent infinite re-renders
+  const checkAuth = useCallback(async () => {
     try {
+      // Check if we already have user data in localStorage to avoid unnecessary API calls
+      const cachedUser = localStorage.getItem("user")
+      if (cachedUser) {
+        const userData = JSON.parse(cachedUser)
+        setAuthState(prev => ({ ...prev, user: userData, loading: false }))
+        return
+      }
+
       const response = await fetch("/api/auth/me", {
         method: "GET",
-        credentials: "include", // Important for cookies
+        credentials: "include",
       })
 
       if (response.ok) {
         const data = await response.json()
         if (data.success && data.data) {
           setAuthState({ user: data.data, loading: false, error: null })
-          // Store user data in localStorage for quick access (but not tokens)
           localStorage.setItem("user", JSON.stringify(data.data))
         } else {
           localStorage.removeItem("user")
@@ -502,7 +695,12 @@ export function useAuth() {
       localStorage.removeItem("user")
       setAuthState({ user: null, loading: false, error: "Failed to check authentication" })
     }
-  }
+  }, [])
+
+  // Run checkAuth only once on mount
+  useEffect(() => {
+    checkAuth()
+  }, [checkAuth])
 
   const login = async (email: string, password: string) => {
     try {
@@ -513,7 +711,7 @@ export function useAuth() {
         headers: { 
           "Content-Type": "application/json" 
         },
-        credentials: "include", // Important for cookies
+        credentials: "include",
         body: JSON.stringify({ email, password }),
       })
 
@@ -521,7 +719,6 @@ export function useAuth() {
 
       if (response.ok && data.success) {
         const userData = data.data
-        // Store user data in localStorage for quick access (but not tokens)
         localStorage.setItem("user", JSON.stringify(userData))
         
         setAuthState({ user: userData, loading: false, error: null })
@@ -547,7 +744,7 @@ export function useAuth() {
       const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include", // Important for cookies
+        credentials: "include",
         body: JSON.stringify({ name, email, password, role }),
       })
 
@@ -577,31 +774,20 @@ export function useAuth() {
     try {
       await fetch("/api/auth/logout", {
         method: "POST",
-        credentials: "include", // Important for cookies
+        credentials: "include",
       })
-      
-      // Clear user data from localStorage
-      localStorage.removeItem("user")
-      setAuthState({ user: null, loading: false, error: null })
-      toast.success("You have been successfully logged out.")
     } catch (error) {
-      console.error("Logout error:", error)
-      // Even if logout API fails, clear local state
+      console.error("Logout API error:", error)
+    } finally {
+      // Always clear local state even if API call fails
       localStorage.removeItem("user")
       setAuthState({ user: null, loading: false, error: null })
       toast.success("You have been successfully logged out.")
     }
   }
 
-  // Helper function to check if user is admin
-  const isAdmin = () => {
-    return authState.user?.role === "admin"
-  }
-
-  // Helper function to check if user is authenticated
-  const isAuthenticated = () => {
-    return !!authState.user
-  }
+  const isAdmin = authState.user?.role === "admin"
+  const isAuthenticated = !!authState.user
 
   return {
     ...authState,
@@ -609,7 +795,7 @@ export function useAuth() {
     register,
     logout,
     checkAuth,
-    isAdmin: isAdmin(),
-    isAuthenticated: isAuthenticated(),
+    isAdmin,
+    isAuthenticated,
   }
 }
