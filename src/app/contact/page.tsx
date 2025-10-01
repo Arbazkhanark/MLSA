@@ -14,15 +14,15 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { 
-  Mail, 
-  Phone, 
-  MapPin, 
-  Send, 
-  ExternalLink, 
-  CheckCircle, 
+import {
+  Mail,
+  Phone,
+  MapPin,
+  Send,
+  ExternalLink,
+  CheckCircle,
   AlertCircle,
-  Loader2 
+  Loader2,
 } from "lucide-react";
 import { Navigation } from "@/components/public/navigation";
 import { Footer } from "@/components/public/footer";
@@ -56,10 +56,10 @@ export default function ContactPage() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('/api/admin/message', {
-        method: 'POST',
+      const response = await fetch("/api/admin/message", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
@@ -67,7 +67,7 @@ export default function ContactPage() {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.message || 'Failed to send message');
+        throw new Error(result.message || "Failed to send message");
       }
 
       if (result.success) {
@@ -84,19 +84,24 @@ export default function ContactPage() {
           priority: "medium",
         });
       } else {
-        throw new Error(result.message || 'Failed to send message');
+        throw new Error(result.message || "Failed to send message");
       }
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : "Failed to send message. Please try again.";
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to send message. Please try again.";
       toast.error(errorMessage);
-      console.error('Error sending message:', error);
+      console.error("Error sending message:", error);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     setFormData((prev) => ({
       ...prev,
@@ -117,7 +122,8 @@ export default function ContactPage() {
                 Message Sent!
               </h1>
               <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-                Thank you for reaching out! We&apos;ve received your message and will get back to you soon.
+                Thank you for reaching out! We&apos;ve received your message and
+                will get back to you soon.
               </p>
               <div className="flex gap-4 justify-center">
                 <Button onClick={() => setIsSubmitted(false)}>
@@ -147,7 +153,8 @@ export default function ContactPage() {
               Get In Touch
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto text-balance">
-              Have questions? Want to collaborate? We&apos;d love to hear from you!
+              Have questions? Want to collaborate? We&apos;d love to hear from
+              you!
             </p>
           </div>
         </div>
@@ -159,14 +166,15 @@ export default function ContactPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Contact Form */}
             <div className="animate-fade-in-up">
-              <Card className="border-border/50 hover:border-primary/50 transition-colors">
+              <Card className="border-primary/50 transition-colors">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Send className="h-5 w-5 text-primary" />
                     Send us a Message
                   </CardTitle>
                   <CardDescription>
-                    Fill out the form below and we&apos;ll get back to you as soon as possible.
+                    Fill out the form below and we&apos;ll get back to you as
+                    soon as possible.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -264,7 +272,7 @@ export default function ContactPage() {
                           name="subject"
                           value={formData.subject}
                           onChange={handleChange}
-                          placeholder="What&apos;s this about?"
+                          placeholder="What's this about?"
                           required
                           disabled={isSubmitting}
                         />
@@ -310,9 +318,9 @@ export default function ContactPage() {
                       />
                     </div>
 
-                    <Button 
-                      type="submit" 
-                      className="w-full" 
+                    <Button
+                      type="submit"
+                      className="w-full"
                       disabled={isSubmitting}
                     >
                       {isSubmitting ? (
@@ -329,7 +337,8 @@ export default function ContactPage() {
                     </Button>
 
                     <p className="text-xs text-muted-foreground text-center">
-                      Fields marked with * are required. We typically respond within 24-48 hours.
+                      Fields marked with * are required. We typically respond
+                      within 24-48 hours.
                     </p>
                   </form>
                 </CardContent>
@@ -341,7 +350,7 @@ export default function ContactPage() {
               className="space-y-6 animate-fade-in-up"
               style={{ animationDelay: "200ms" }}
             >
-              <Card className="border-border/50 hover:border-primary/50 transition-colors">
+              <Card className="border-border/50 hover:border-primary/50 transition-colors bg-gray-900">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Mail className="h-5 w-5 text-primary" />
@@ -356,7 +365,7 @@ export default function ContactPage() {
                     <div>
                       <p className="font-medium">Email</p>
                       <p className="text-sm text-muted-foreground">
-                        mlsa@college.edu
+                        mlsa.auh@gmail.com
                       </p>
                     </div>
                   </div>
@@ -385,7 +394,7 @@ export default function ContactPage() {
                 </CardContent>
               </Card>
 
-              <Card className="border-border/50 hover:border-primary/50 transition-colors">
+              <Card className="border-border/50 hover:border-primary/50 transition-colors bg-gray-900">
                 <CardHeader>
                   <CardTitle>Office Hours</CardTitle>
                 </CardHeader>
@@ -411,7 +420,7 @@ export default function ContactPage() {
                 </CardContent>
               </Card>
 
-              <Card className="border-border/50 hover:border-primary/50 transition-colors">
+              <Card className="border-border/50 hover:border-primary/50 transition-colors bg-gray-900">
                 <CardHeader>
                   <CardTitle>Follow Us</CardTitle>
                   <CardDescription>
@@ -421,20 +430,53 @@ export default function ContactPage() {
                 <CardContent>
                   <div className="flex flex-wrap gap-2">
                     {[
-                      { name: "LinkedIn", color: "bg-blue-600" },
-                      { name: "Twitter", color: "bg-sky-500" },
-                      { name: "Instagram", color: "bg-pink-600" },
-                      { name: "Discord", color: "bg-indigo-600" },
-                      { name: "GitHub", color: "bg-gray-800" },
+                      {
+                        name: "Instagram",
+                        color: "bg-pink-600",
+                        url: "https://www.instagram.com/mlsaxauh",
+                        icon: "📸",
+                      },
+                      {
+                        name: "X (Twitter)",
+                        color: "bg-black",
+                        url: "https://x.com/MLSAxAUH",
+                        icon: "🐦",
+                      },
+                      {
+                        name: "LinkedIn",
+                        color: "bg-blue-600",
+                        url: "https://www.linkedin.com/company/mlsa-amity-university-haryana",
+                        icon: "💼",
+                      },
+                      {
+                        name: "Discord",
+                        color: "bg-indigo-600",
+                        url: "https://discord.com/channels/915679536472023091/915679536472023094",
+                        icon: "💬",
+                      },
+                      {
+                        name: "Email",
+                        color: "bg-red-600",
+                        url: "mailto:mlsa.auh@gmail.com",
+                        icon: "✉️",
+                      },
                     ].map((social) => (
                       <Button
                         key={social.name}
                         variant="outline"
                         size="sm"
-                        className="hover:bg-primary hover:text-primary-foreground bg-transparent"
+                        className="hover:bg-primary hover:text-primary bg-transparent"
+                        asChild
                       >
-                        {social.name}
-                        <ExternalLink className="h-3 w-3 ml-1" />
+                        <Link
+                          href={social.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <span className="mr-1">{social.icon}</span>
+                          {social.name}
+                          <ExternalLink className="h-3 w-3 ml-1" />
+                        </Link>
                       </Button>
                     ))}
                   </div>
@@ -442,7 +484,7 @@ export default function ContactPage() {
               </Card>
 
               {/* Response Time Info */}
-              <Card className="border-border/50 bg-blue-50/50">
+              <Card className="border-border/50 bg-gray-900">
                 <CardHeader>
                   <CardTitle className="text-sm flex items-center gap-2">
                     <AlertCircle className="h-4 w-4 text-blue-600" />

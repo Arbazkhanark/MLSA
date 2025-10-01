@@ -181,9 +181,11 @@ export default function TeamPage() {
                 >
                   <div className="relative">
                     <Image
-                      src={member.avatar || "/placeholder.svg"}
+                      src={member.avatar || "https://images.pexels.com/photos/7605935/pexels-photo-7605935.jpeg"}
                       alt={member.name}
                       className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
+                      width={100}
+                      height={100}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
