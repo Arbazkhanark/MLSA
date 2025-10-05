@@ -58,7 +58,7 @@ export default function HomePage() {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="animate-glow">
-                <Link href="/team" className="flex items-center">
+                <Link href="/join-community" className="flex items-center">
                   Join Our Community
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Link>

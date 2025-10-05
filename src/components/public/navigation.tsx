@@ -53,11 +53,11 @@ export function Navigation() {
             {/* <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center"> */}
               {/* <Code className="w-5 h-5 text-primary-foreground" /> */}
               <Image
-                src={"/logo.png"}
+                src={"/logo.jpeg"}
                 alt={"mlsa logo"}
-                height={70}
-                width={70}
-                // className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
+                height={50}
+                width={50}
+                className="rounded-full"
               />
             {/* </div> */}
             <span className="font-bold text-xl">MLSA</span>

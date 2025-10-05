@@ -69,16 +69,16 @@ export function Footer() {
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
               <Image
-                src={"/logo.png"}
-                alt={"mlsa logo"}
+                src={"/logo.jpeg"}
+                alt={"mlsa x auh logo"}
                 height={150}
                 width={150}
               />
-              <span className="font-bold text-xl">MLSA</span>
+              <span className="font-bold text-xl">MLSA x AUH</span>
             </div>
             <p className="text-muted-foreground text-sm">
-              Empowering students through technology and community. Join us in
-              building the future.
+              Empowering students at Amity University Haryana through technology and community. 
+              Join us in building the future of tech at AUH.
             </p>
           </div>
 
@@ -181,7 +181,7 @@ export function Footer() {
             </div>
             <div className="mt-4 space-y-2">
               <p className="text-sm text-muted-foreground">
-                Follow us on social media for updates
+                Follow MLSA x AUH on social media for updates
               </p>
               <div className="flex flex-wrap gap-1">
                 {socialLinks.map((social) => (
@@ -205,7 +205,7 @@ export function Footer() {
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="text-center md:text-left">
               <p className="text-muted-foreground text-sm">
-                &copy; 2025 Microsoft Learn Student Ambassadors. All rights reserved.
+                &copy; 2025 Microsoft Learn Student Ambassadors x Amity University Haryana. All rights reserved.
               </p>
             </div>
             
