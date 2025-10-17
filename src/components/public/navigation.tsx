@@ -24,7 +24,6 @@ const navItems = [
   { name: "Resources", href: "/resources", icon: BookOpen },
   { name: "Happy Moments", href: "/happy-moments", icon: Heart },
   { name: "Contact", href: "/contact", icon: Mail },
-  { name: "Admin", href: "/admin", icon: Settings },
 ];
 
 export function Navigation() {
