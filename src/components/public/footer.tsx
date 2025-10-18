@@ -217,7 +217,8 @@ export function Footer() {
                 <span>by</span>
               </div>
               <div className="flex items-center gap-3">
-                <span className="text-sm font-medium text-foreground">Arbaz Khan</span>
+                {/* <span className="text-sm font-medium text-foreground">Arbaz Khan</span> */}
+                <span className="text-sm font-medium text-foreground">Core MLSA Team</span>
                 <div className="flex gap-2">
                   {developerLinks.map((link) => (
                     <a
