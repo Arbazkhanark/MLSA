@@ -231,7 +231,7 @@ export default function ContactPage() {
                           type="tel"
                           value={formData.phone}
                           onChange={handleChange}
-                          placeholder="+1 (555) 123-4567"
+                          placeholder="+(91)-82XXXX7916"
                           disabled={isSubmitting}
                         />
                       </div>
@@ -376,7 +376,7 @@ export default function ContactPage() {
                     <div>
                       <p className="font-medium">Phone</p>
                       <p className="text-sm text-muted-foreground">
-                        +1 (555) 123-4567
+                        +(91)-8287817916
                       </p>
                     </div>
                   </div>
@@ -387,7 +387,8 @@ export default function ContactPage() {
                     <div>
                       <p className="font-medium">Location</p>
                       <p className="text-sm text-muted-foreground">
-                        Computer Science Building, Room 201
+                        Block C Technical building, Amity University Haryana,
+                        Gurgaon, India
                       </p>
                     </div>
                   </div>
@@ -406,12 +407,12 @@ export default function ContactPage() {
                         2:00 PM - 6:00 PM
                       </span>
                     </div>
-                    <div className="flex justify-between">
+                    {/* <div className="flex justify-between">
                       <span>Saturday</span>
                       <span className="text-muted-foreground">
                         10:00 AM - 2:00 PM
                       </span>
-                    </div>
+                    </div> */}
                     <div className="flex justify-between">
                       <span>Sunday</span>
                       <span className="text-muted-foreground">Closed</span>
